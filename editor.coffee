@@ -1,99 +1,67 @@
 
-editor = (box) ->
-	box.onkeydown = (event) ->
-		start_p = box.selectionStart
-		end_p = box.selectionEnd
-		c = box.value
-		if event.keyCode is 9
-			#event.preventDefault()
-			unless event.ctrlKey
-				if start_p is end_p
-					p = start_p
-					if event.shiftKey
-						if c[p-1] is '\t'
-							box.value = c[..p-2] + c[p..]
-							box.setSelectionRange p-1, p-1
-					else
-						if p is 0
-							box.value = '\t' + box.value
-							box.setSelectionRange 1, 1
-							return false
-						else if c[p-1] is '\n'
-							last_line = c[..p-2].lastIndexOf '\n'
-							indent = c[last_line..p-2].match /^\n\t+/
-							if indent
-								indents = indent[0][1..]
-								if indents.length >= 1
-									box.value = c[..p-1] + indents + c[p..]
-									new_p = p + indents.length
-									box.setSelectionRange new_p, new_p
-									return false
-						box.value = c[..p-1] + '\t' + c[p..]
-						box.setSelectionRange p+1, p+1
-					return false
-				else
-					last_line = c[..start_p-1].lastIndexOf '\n'
-					if last_line >= 0 then start_p = last_line
-					if event.shiftKey
-						front = if start_p > 0 then c[0..start_p-1] else ''
-						between = c[start_p..end_p-1].replace /\n\t/g, '\n'
-						behind = c[end_p..]
-						if start_p is 0
-							if between[0] is '\t'
-								between = between[1..]
-						box.value = front + between + behind
-					else
-						front = if start_p > 0 then c[0..start_p-1] else ''
-						between = c[start_p..end_p-1].replace /\n/g, '\n\t'
-						behind = c[end_p..]
-						addtion = if start_p is 0 then '\t' else ''
-						box.value = addtion + front + between + behind
-				return false
-		else if event.keyCode is 13
-			unless event.ctrlKey or start_p is 0
-				if start_p is end_p
-					p = start_p
-					unless event.shiftKey
-						last_n = c[0..p-1].lastIndexOf '\n'
-						if last_n is -1
-							line = '\n' + c[0..p-1]
-						else
-							line = c[last_n..p-1]
-						indent = line.match /^\n\t+/
-						console.log indent
-						if indent
-							indents = indent[0][1..]
-							behind = if c.length is p then '' else c[p..] 
-							box.value = c[..p-1] + '\n' + indents + behind
-							new_p = p + indents.length + 1
-							box.setSelectionRange new_p, new_p
-							return false
-					else
-						indent = c[..p-1].match /\n\t+$/
-						if indent
-							tab_length = indent[0].length
-							front = c[..(p - 1 - tab_length)]
-							behind = c[p..]
-							box.value = front + behind
-							new_p = p - tab_length
-							box.setSelectionRange new_p, new_p
-							return false
-		else if event.keyCode is 8
-			if start_p is end_p
-				p = start_p
-				if c[p-1] is '\n'
-					before = c[..p-2]
-					tab_only = before.match /\n\t+$/
-					front = c[..p-1]
-					behind = c[p..]
-					if tab_only
-						tab_length = tab_only[0].length - 1
-						front = front[..(-2 - tab_length)]
-						box.value = front + behind
-						new_p = p - tab_length - 1
-						box.setSelectionRange new_p, new_p
-						return false
+# main idea, to wrap text to lines in object
+editor = (tagid) ->
+  area = g_id tagid
+  start = area.selectionStart
+  end = area.selectionEnd
+  contx = area.value
+  obj =
+    lines: contx.split '\n'
+    a_row: get_row contx, start
+    a_column: get_column contx, start
+    a_start: line_start contx, start
+    a_end: line_end contx, start
+    b_row: get_row contx, end
+    b_column: get_column contx, end
+    b_start: line_start contx, end
+    b_end: line_end contx, end
+    same: start is end
+
+# function to get the row index
+get_row = (str, point) ->
+  count = 0
+  str = str[...point]
+  o str
+  count += 1 if i is '\n' for i in str
+  count
+
+# function to get column index
+get_column = (str, point) ->
+  str = str[0...point]
+  last = str.lastIndexOf '\n'
+  last += 1
+  sub_str = str[last..]
+  n = sub_str.length
+
+# line start or not
+line_start = (text, point) ->
+  p = point - 1
+  return true if text[p] is '\n'
+  return true unless text[p]?
+  false
+
+# line end or not
+line_end = (text, point) ->
+  p = point
+  return true if text[p] is '\n'
+  return true unless text[p]?
+  false
+
+# take id and find the element
+g_id = (tagid) ->
+  elem = document.getElementById tagid
+  elem
+
+# output function o
+o = (v...) -> console.log v
+
+# main behavior, using jQuery
 window.onload = ->
-	box = (document.getElementsByTagName 'textarea')[0]
-	editor box
-	@
+  editor 'area'
+  area = g_id 'area'
+  area.onclick = ->
+    obj = editor 'area'
+    o obj.a_row, obj.a_column
+    o obj.a_start, obj.a_end
+    o obj.b_row, obj.b_column
+    o obj.b_start, obj.b_end
