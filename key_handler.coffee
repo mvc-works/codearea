@@ -58,8 +58,31 @@ window.key_ctrl_k = (area) ->
     tool.write_text area, obj
     return false
 
+# unfocus the textarea
+window.key_esc = (area) ->
+  do area.blur
+
 # delete current line
-window.key_ctrl_shift_k = (area) ->
+window.key_ctrl_shift_K = (area) ->
+  now = tool.wrap_text area
+  o 'called'
+  if now.same
+    row = now.a_row
+    lines = now.lines
+    lines = lines[...row].concat lines[row+1..]
+    o lines
+    a_row = row
+    a_col = 0
+    if row isnt 0
+      a_row = row - 1
+      a_col = null
+    obj =
+      lines: lines
+      a_row: a_row
+      a_col: a_col
+    tool.write_text area, obj
+    return false
+  o 'else ....'
 
 # enter only, consider last line and
 window.key_enter = (area) ->
