@@ -2,16 +2,35 @@
 o = (v...) -> console.log v
 tool = global_sharing_tools
 
+# tab to indent is neccesary
 window.key_tab = (area) ->
   now = tool.wrap_text area
   # o now
   if now.same
-    # o now.a_sta, now.a_end, now.a_row, now.tail
     lines = now.lines
-    sta = now.a_sta
-    end = now.a_end
     row = now.a_row
-    col = now.a_col
+    if now.a_sta and row > 0 and lines[row-1].match /^\s+/
+      spaces = (lines[row-1].match /^\s+/)[0]
+      space_n = spaces.length
+      lines[row] = spaces + lines[row]
+      obj =
+        lines: lines
+        a_row: row
+        a_col: space_n
+      tool.write_text area, obj
+    else
+      spaces = (lines[row].match /^\s*/)[0]
+      space_n = spaces.length
+      add_n = 2 - space_n%2
+      if add_n is 1
+        lines[row] = ' '+lines[row]
+      else
+        lines[row] = '  '+lines[row]
+      obj =
+        lines: lines
+        a_row: row
+        a_col: now.a_col + add_n
+      tool.write_text area, obj
   else
     sta_line = now.a_row
     end_line = now.b_row
@@ -25,6 +44,25 @@ window.key_tab = (area) ->
       b_row: end_line
       b_col: now.b_col+2
     tool.write_text area, obj
+  false
+
+# use shift tab to remove indentation
+window.key_shift_tab = (area) ->
+  now = tool.wrap_text area
+  lines = now.lines
+  if now.same
+    row = now.a_row
+    spaces = (lines[row].match /^\s*/)[0]
+    space_n = spaces.length
+    reduce_n = 2 - spaces%2
+    o lines[row], spaces, space_n, reduce_n
+    if space_n >= reduce_n
+      lines[row] = lines[row][reduce_n..]
+      obj =
+        lines: lines
+        a_row: row
+        a_col: if now.a_col-reduce_n>0 then now.a_col-reduce_n else 0
+      tool.write_text area, obj
   false
 
 # select current line (to the end of last line)
