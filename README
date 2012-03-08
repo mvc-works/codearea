@@ -1,6 +1,22 @@
 
-可以看这里的演示, 功能不多, 只有基础的几个
-http://jiyinyiyong.github.com/projects/web_tools/web_editor/editor.html
-现在因为我的缩紧习惯改成了双空格, 打算重写
-当前的版本是寒假写的, 比较难用很长的 TAB
-我打算最近模仿 ST2 增加一些功能
+Live demo [here](http://docview.cnodejs.net/leaf/projects/textareaEditor/editor.html?html),  
+but only works for Firefox, as I didn't get clear about `event.charCode`.  
+Someone may folk it, (or I'll trying to fix it when I get familiar with details about this).  
+
+I'm tring to make textarea more like a code area, just some basic features like  
+indentation, auto indent, delete line, move line, etc. ,  
+
+There are three configure files:
+`map_key.coffee`: list the available shortcuts, most of them haven't been deployed yet  
+`editor.coffee`: basic functions to handle lines of content,  
+`key_handler.coffee`: the behavior of shortcuts   
+
+The schedule is like this:  
+1. apply `event_handler` to the `id` of a `<textarea>` element,  
+2. when event was caught, `map_keys` will choose the spection function to response,  
+3. use `tool.wrap_text` to abstract(?...) the text, return as an object,  
+4. analyze the object(as `now`), create a new object names `obj` of the result,  
+5. use `tool.write_text` to draw texts in the `<textarea>`
+
+The biggest problem is `event.charCode`, are different in Firefox and Chrome..  
+So I should learn basic JS knowledge first, that's.. I'll try..
