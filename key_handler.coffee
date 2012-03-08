@@ -34,7 +34,7 @@ window.key_ctrl_l = (area) ->
   a_col = 0
   if now.lines[a_row-1]?
     a_row -= 1
-    a_col = null
+    a_col = undefined
   obj =
     lines: now.lines
     a_row: a_row
@@ -75,14 +75,24 @@ window.key_ctrl_shift_K = (area) ->
     a_col = 0
     if row isnt 0
       a_row = row - 1
-      a_col = null
+      a_col = undefined
     obj =
       lines: lines
       a_row: a_row
       a_col: a_col
     tool.write_text area, obj
-    return false
-  o 'else ....'
+  else
+    sta_row = now.a_row
+    end_row = now.b_row
+    lines = now.lines
+    lines = lines[...sta_row].concat lines[end_row+1..]
+    a_row = sta_row - 1
+    obj =
+      lines: lines
+      a_row: a_row
+    o obj
+    tool.write_text area, obj
+  return false
 
 # enter only, consider last line and
 window.key_enter = (area) ->

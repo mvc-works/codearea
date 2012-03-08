@@ -28,19 +28,16 @@ wrap_text = (area) ->
 
 # have args about text, implement it
 write_text = (area, obj) ->
-  arr = obj.lines
-  last_line = arr.length - 1
-  last_letter = arr[last_line].length
-  a_row = if obj.a_row? then obj.a_row else last_line
-  if obj.a_row?
-    if obj.a_col? then a_col = obj.a_col
-    else a_col = line_end arr[a_row]
-  else a_col = last_letter
+  arr = if obj.lines.length > 0 then obj.lines else ['']
+  o obj
+  end_line = arr.length - 1
+  a_row = if obj.a_row? then obj.a_row else end_line
+  a_col = if obj.a_col? then obj.a_col else arr[a_row].length
   b_row = if obj.b_row? then obj.b_row else a_row
-  if obj.b_row?
-    if obj.b_col? then b_col = obj.b_col
-    else b_col = line_end arr[b_row]
-  else b_col = last_letter
+  if obj.b_col? then b_col = obj.col
+  else if obj.row? then b_col = arr[b_row]
+  else b_col = a_col
+  o '4: ', a_row, a_col, b_row, b_col
   area.value = arr.join '\n'
   area.selectionStart = set_position arr, a_row, a_col
   area.selectionEnd = set_position arr, b_row, b_col
@@ -48,7 +45,7 @@ write_text = (area, obj) ->
 # change raw and column index to position
 set_position = (arr, row, col) ->
   lines_before_curse = arr[0...row]
-  inline_before_curse = arr[row][0...col]
+  inline_before_curse = if arr[row]? then arr[row][0...col] else ''
   lines_before_curse.push inline_before_curse
   text_before_curse = lines_before_curse.join '\n'
   position = text_before_curse.length
@@ -86,10 +83,6 @@ at_line_end = (text, point) ->
 line_empty = (line) ->
   if (line.match /^\s*$/)? then true else false
 
-# get the end index of a line
-line_end = (str) ->
-  index = str.length
-
 # get the number of spaces in the indent
 indent_n = (str) ->
   count = 0
@@ -116,7 +109,6 @@ tool =
   write_text: write_text
   line_empty: line_empty
   indent_n: indent_n
-  line_end: line_end
 
 # should use new function to add event handler
 event_handler = (tagid) ->
@@ -128,7 +120,6 @@ event_handler = (tagid) ->
     alt = e.altKey
     ctrl = e.ctrlKey
     arr = [ctrl, alt, shift, code]
-    o arr
     obj = wrap_text area
     if key_equal arr, [off, off, off, press.tab  ] then return key_tab              area
     if key_equal arr, [off, off, off, press.enter] then return key_enter            area
