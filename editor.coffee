@@ -28,7 +28,6 @@ wrap_text = (area) ->
 
 # have args about text, implement it
 write_text = (area, obj) ->
-  o 'write_text called'
   arr = obj.lines
   last_line = arr.length - 1
   last_letter = arr[last_line].length
@@ -84,7 +83,7 @@ at_line_end = (text, point) ->
   false
 
 # check empty line
-empty_line = (line) ->
+line_empty = (line) ->
   if (line.match /^\s*$/)? then true else false
 
 # get the end index of a line
@@ -107,12 +106,13 @@ press =
   alt: 18
   backspace: 8
   l: 108
+  k: 107
 
 # send tool to key_handlers
 tool =
   wrap_text: wrap_text
   write_text: write_text
-  empty_line: empty_line
+  line_empty: line_empty
   indent_n: indent_n
   line_end: line_end
 
@@ -121,26 +121,29 @@ event_handler = (tagid) ->
   area = g_id tagid
   area.onkeypress = (e) ->
     code = e.keyCode or e.charCode
+    o e.keyCode, e.charCode, '::', code
     shift = e.shiftKey
     alt = e.altKey
     ctrl = e.ctrlKey
     arr = [ctrl, alt, shift, code]
     obj = wrap_text area
-    if equal arr, [off, off, off, press.tab  ] then return key_tab              area, tool
-    if equal arr, [off, off, off, press.enter] then return key_enter            area, tool
+    if key_equal arr, [off, off, off, press.tab  ] then return key_tab              area
+    if key_equal arr, [off, off, off, press.enter] then return key_enter            area
     # with alt key active
-    if equal arr, [off, on,  off, press.enter] then return key_alt_enter        area, tool
+    if key_equal arr, [off, on,  off, press.enter] then return key_alt_enter        area
     # with shift key active
-    if equal arr, [off, off, on,  press.tab  ] then return key_shift_tab        area, tool
-    if equal arr, [off, off, on,  press.enter] then return key_shift_enter      area, tool
+    if key_equal arr, [off, off, on,  press.tab  ] then return key_shift_tab        area
+    if key_equal arr, [off, off, on,  press.enter] then return key_shift_enter      area
     # with ctrl key active
-    if equal arr, [on,  off, off, press.l    ] then return key_ctrl_l           area, tool
-    if equal arr, [on,  off, off, press.enter] then return key_ctrl_enter       area, tool
+    if key_equal arr, [on,  off, off, press.l    ] then return key_ctrl_l           area
+    if key_equal arr, [on,  off, off, press.enter] then return key_ctrl_enter       area
+    if key_equal arr, [on,  off, off, press.k    ] then return key_ctrl_k           area
     # with ctrl shift keys active
-    if equal arr, [on,  off, on,  press.enter] then return key_ctrl_shift_enter area, tool
+    if key_equal arr, [on,  off, on,  press.enter] then return key_ctrl_shift_enter area
+    if key_equal arr, [on,  off, on,  press.k    ] then return key_ctrl_shift_k     area
 
 # switch dont support well, try function
-equal = ([a1, a2, a3, a4], [b1, b2, b3, b4]) ->
+key_equal = ([a1, a2, a3, a4], [b1, b2, b3, b4]) ->
   return false unless a1 is b1
   return false unless a2 is b2
   return false unless a3 is b3
@@ -149,4 +152,4 @@ equal = ([a1, a2, a3, a4], [b1, b2, b3, b4]) ->
 
 # should be placed after function's defining
 window.event_handler = event_handler if window?
-window.tool = tool
+window.global_sharing_tools = tool
