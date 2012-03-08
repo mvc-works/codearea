@@ -95,6 +95,63 @@ window.key_ctrl_shift_K = (area) ->
     tool.write_text area, obj
   return false
 
+# duplicate current line
+window.key_ctrl_shift_D = (area) ->
+  now = tool.wrap_text area
+  lines = now.lines
+  if now.same
+    row = now.a_row
+    lines = lines[..row].concat lines[row..]
+    obj =
+      lines: lines
+      a_row: row+1
+      a_col: now.a_col
+    tool.write_text area, obj
+  else
+    sta_row = now.a_row
+    end_row = now.b_row
+    lines = lines[..end_row].concat lines[sta_row..]
+    duplicate = end_row - sta_row + 1
+    obj =
+      lines: lines
+      a_row: sta_row + duplicate
+      a_col: now.a_col
+      b_row: end_row + duplicate
+      b_col: now.b_col
+    tool.write_text area, obj
+  return false
+
 # enter only, consider last line and
 window.key_enter = (area) ->
-  o ''
+  now = tool.wrap_text area
+  if now.same
+    row = now.a_row
+    col = now.a_col
+    lines = now.lines
+    lines = lines[..row].concat lines[row..]
+    lines[row] = lines[row][...col]
+    spaces = (lines[row].match /^\s*/)[0]
+    space_n = spaces.length
+    lines[row+1] = spaces + lines[row+1][col..]
+    obj =
+      lines: lines
+      a_row: row+1
+      a_col: space_n
+    tool.write_text area, obj
+    return false
+
+# press backspace at head, last line if empty, delete it
+window.key_backspace = (area) ->
+  now = tool.wrap_text area
+  if now.same and now.a_sta
+    row = now.a_row
+    lines = now.lines
+    if lines[row-1]?
+      if lines[row-1].match /^\s+$/
+        lines = lines[...row-1].concat lines[row..]
+        obj =
+          lines: lines
+          a_row: row-1
+          a_col: 0
+        tool.write_text area, obj
+        return false
