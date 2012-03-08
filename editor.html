@@ -1,15 +1,17 @@
 
 <html>
   <head>
-  	<meta charset="utf-8"/>
+    <meta charset="utf-8"/>
     <script src="editor.coffee" type="text/coffeescript"></script>
-  	<script src="do.coffee" type="text/coffeescript"></script>
+  	<script src="key_handler.coffee" type="text/coffeescript"></script>
+    <script src="do.coffee" type="text/coffeescript"></script>
   	<script type="text/javascript" src="coffee-script.js"></script>
   	<style>
   	  body {
   	  	background: hsl(0,20%,60%);
   	  }
   	  textarea {
+        float: left;
   	  	border: 0px;
   	  	width: 900px;
   	  	height: 500px;
@@ -21,13 +23,20 @@
   	  	font-size: 14px;
   	  	font-family: Monospace;
   	  	resize: none;
-  	  	box-shadow: 0px 10px 10px black;
-  	  	-webkit-box-shadow: 0px 10px 10px black;
-  	  	-moz-box-shadow: 0px 10px 10px black;
+  	  	box-shadow: 3px 4px 20px black;
+  	  	-webkit-box-shadow: 3px 4px 20px black;
   	  }
+      #debug {
+        float: left;
+        width: 100px;
+        height: 40px;
+        font-size: 20px;
+        background: red;
+      }
   	</style>
   </head>
   <body>
   	<textarea id="area"></textarea>
+    <nav id="debug">Debug<nav>
   </body>
 </html>
