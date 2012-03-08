@@ -28,21 +28,28 @@ wrap_text = (area) ->
 
 # have args about text, implement it
 write_text = (area, obj) ->
-  arr = obj.arr
+  o 'write_text called'
+  arr = obj.lines
   last_line = arr.length - 1
   last_letter = arr[last_line].length
-  a_sta = if obj.a_sta? then obj.a_sta else last_line
-  a_end = if obj.a_end? then obj.a_end else last_letter
-  b_sta = if obj.b_sta? then obj.b_sta else a_sta
-  b_end = if obj.b_end? then obj.b_end else a_end
+  a_row = if obj.a_row? then obj.a_row else last_line
+  if obj.a_row?
+    if obj.a_col? then a_col = obj.a_col
+    else a_col = line_end arr[a_row]
+  else a_col = last_letter
+  b_row = if obj.b_row? then obj.b_row else a_row
+  if obj.b_row?
+    if obj.b_col? then b_col = obj.b_col
+    else b_col = line_end arr[b_row]
+  else b_col = last_letter
   area.value = arr.join '\n'
-  area.selectionStart = set_position arr, a_sta, a_end
-  area.selectionEnd = set_position arr, b_sta, b_end
+  area.selectionStart = set_position arr, a_row, a_col
+  area.selectionEnd = set_position arr, b_row, b_col
 
 # change raw and column index to position
-set_position = (arr, sta, end) ->
-  lines_before_curse = arr[0...sta]
-  inline_before_curse = arr[sta][0...end]
+set_position = (arr, row, col) ->
+  lines_before_curse = arr[0...row]
+  inline_before_curse = arr[row][0...col]
   lines_before_curse.push inline_before_curse
   text_before_curse = lines_before_curse.join '\n'
   position = text_before_curse.length
@@ -103,10 +110,11 @@ press =
 
 # send tool to key_handlers
 tool =
-  wrap_text:  wrap_text
+  wrap_text: wrap_text
   write_text: write_text
   empty_line: empty_line
-  indent_n:   indent_n
+  indent_n: indent_n
+  line_end: line_end
 
 # should use new function to add event handler
 event_handler = (tagid) ->
