@@ -65,12 +65,11 @@ window.key_esc = (area) ->
 # delete current line
 window.key_ctrl_shift_K = (area) ->
   now = tool.wrap_text area
-  o 'called'
   if now.same
     row = now.a_row
     lines = now.lines
     lines = lines[...row].concat lines[row+1..]
-    o lines
+    # o lines
     a_row = row
     a_col = 0
     if row isnt 0
@@ -85,8 +84,10 @@ window.key_ctrl_shift_K = (area) ->
     sta_row = now.a_row
     end_row = now.b_row
     lines = now.lines
+    o 'origin lines: ', lines
     lines = lines[...sta_row].concat lines[end_row+1..]
-    a_row = sta_row - 1
+    o 'after; ', lines
+    a_row = if sta_row>0 then sta_row-1 else 0
     obj =
       lines: lines
       a_row: a_row

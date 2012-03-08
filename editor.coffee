@@ -29,15 +29,16 @@ wrap_text = (area) ->
 # have args about text, implement it
 write_text = (area, obj) ->
   arr = if obj.lines.length > 0 then obj.lines else ['']
-  o obj
+  # o obj
   end_line = arr.length - 1
   a_row = if obj.a_row? then obj.a_row else end_line
   a_col = if obj.a_col? then obj.a_col else arr[a_row].length
   b_row = if obj.b_row? then obj.b_row else a_row
   if obj.b_col? then b_col = obj.col
-  else if obj.row? then b_col = arr[b_row]
-  else b_col = a_col
-  o '4: ', a_row, a_col, b_row, b_col
+  else
+    if obj.b_row? then b_col = arr[b_row].length
+    else b_col = a_col
+  # o '4: ', a_row, a_col, b_row, b_col
   area.value = arr.join '\n'
   area.selectionStart = set_position arr, a_row, a_col
   area.selectionEnd = set_position arr, b_row, b_col
@@ -91,18 +92,6 @@ indent_n = (str) ->
     str = str[1..]
   count
 
-# about event.keyCode
-press =
-  enter: 13
-  tab: 9
-  shift: 16
-  alt: 18
-  backspace: 8
-  l: 108
-  k: 107
-  K: 75
-  esc: 27
-
 # send tool to key_handlers
 tool =
   wrap_text: wrap_text
@@ -120,22 +109,7 @@ event_handler = (tagid) ->
     alt = e.altKey
     ctrl = e.ctrlKey
     arr = [ctrl, alt, shift, code]
-    obj = wrap_text area
-    if key_equal arr, [off, off, off, press.tab  ] then return key_tab              area
-    if key_equal arr, [off, off, off, press.enter] then return key_enter            area
-    if key_equal arr, [off, off, off, press.esc  ] then return key_esc              area
-    # with alt key active
-    if key_equal arr, [off, on,  off, press.enter] then return key_alt_enter        area
-    # with shift key active
-    if key_equal arr, [off, off, on,  press.tab  ] then return key_shift_tab        area
-    if key_equal arr, [off, off, on,  press.enter] then return key_shift_enter      area
-    # with ctrl key active
-    if key_equal arr, [on,  off, off, press.l    ] then return key_ctrl_l           area
-    if key_equal arr, [on,  off, off, press.enter] then return key_ctrl_enter       area
-    if key_equal arr, [on,  off, off, press.k    ] then return key_ctrl_k           area
-    # with ctrl shift keys active
-    if key_equal arr, [on,  off, on,  press.enter] then return key_ctrl_shift_enter area
-    if key_equal arr, [on,  off, on,  press.K    ] then return key_ctrl_shift_K     area
+    return map_keys arr, area, key_equal
 
 # switch dont support well, try function
 key_equal = ([a1, a2, a3, a4], [b1, b2, b3, b4]) ->
