@@ -23,9 +23,9 @@ window.key_tab = (area) ->
       space_n = spaces.length
       add_n = 2 - space_n%2
       if add_n is 1
-        lines[row] = ' '+lines[row]
+        lines[row] = '\ '+lines[row]
       else
-        lines[row] = '  '+lines[row]
+        lines[row] = '\ \ '+lines[row]
       obj =
         lines: lines
         a_row: row
@@ -36,7 +36,7 @@ window.key_tab = (area) ->
     end_line = now.b_row
     lines = now.lines
     for index in [sta_line..end_line]
-      lines[index] = '  '+lines[index]
+      lines[index] = '\ \ '+lines[index]
     obj =
       lines: lines
       a_row: sta_line
@@ -62,6 +62,26 @@ window.key_shift_tab = (area) ->
         lines: lines
         a_row: row
         a_col: if now.a_col-reduce_n>0 then now.a_col-reduce_n else 0
+      tool.write_text area, obj
+  else
+    sta_row = now.a_row
+    end_row = now.b_row
+    space_ns = lines[sta_row..end_row].map (line) ->
+      spaces = (line.match /^\s*/)[0]
+      spaces.length
+    o space_ns
+    min_spaces = space_ns.reduce (a, b) -> if a<b then a else b
+    o min_spaces
+    if min_spaces > 0
+      reduce_n = 2 - min_spaces%2
+      for index in [sta_row..end_row]
+        lines[index] = lines[index][reduce_n..]
+      obj =
+        lines: lines
+        a_row: sta_row
+        a_col: now.a_col - reduce_n
+        b_row: end_row
+        b_col: now.b_col - reduce_n
       tool.write_text area, obj
   false
 
@@ -96,12 +116,27 @@ window.key_ctrl_k = (area) ->
     tool.write_text area, obj
     return false
 
+# delete form curse to the start of the line, similar to k..
+window.key_ctrl_u = (area) ->
+  now = tool.wrap_text area
+  if now.same
+    lines = now.lines
+    row = now.a_row
+    col = now.a_col
+    lines[row] = lines[row][col..]
+    obj =
+      lines: lines
+      a_row: row
+      a_col: 0
+    tool.write_text area, obj
+    return false
+
 # unfocus the textarea
 window.key_esc = (area) ->
   do area.blur
 
 # delete current line
-window.key_ctrl_shift_K = (area) ->
+window.key_ctrl_shift_k = (area) ->
   now = tool.wrap_text area
   if now.same
     row = now.a_row
@@ -134,7 +169,7 @@ window.key_ctrl_shift_K = (area) ->
   return false
 
 # duplicate current line
-window.key_ctrl_shift_D = (area) ->
+window.key_ctrl_shift_d = (area) ->
   now = tool.wrap_text area
   lines = now.lines
   if now.same
@@ -193,3 +228,8 @@ window.key_backspace = (area) ->
           a_col: 0
         tool.write_text area, obj
         return false
+
+### ctrl Enter to open a new line with indentation
+window.key_ctrl_enter = (area) ->
+  now = tool.wrap_text area
+  if now.same

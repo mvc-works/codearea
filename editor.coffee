@@ -34,11 +34,11 @@ write_text = (area, obj) ->
   a_row = if obj.a_row? then obj.a_row else end_line
   a_col = if obj.a_col? then obj.a_col else arr[a_row].length
   b_row = if obj.b_row? then obj.b_row else a_row
-  if obj.b_col? then b_col = obj.col
+  if obj.b_col? then b_col = obj.b_col
   else
     if obj.b_row? then b_col = arr[b_row].length
     else b_col = a_col
-  # o '4: ', a_row, a_col, b_row, b_col
+  o '4: ', a_row, a_col, b_row, b_col, obj.b_col
   area.value = arr.join '\n'
   area.selectionStart = set_position arr, a_row, a_col
   area.selectionEnd = set_position arr, b_row, b_col
@@ -102,7 +102,7 @@ tool =
 # should use new function to add event handler
 event_handler = (tagid) ->
   area = g_id tagid
-  area.onkeypress = (e) ->
+  area.onkeydown = (e) ->
     code = e.keyCode or e.charCode
     o e.keyCode, e.charCode, '::', code
     shift = e.shiftKey
