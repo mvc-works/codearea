@@ -229,7 +229,109 @@ window.key_backspace = (area) ->
         tool.write_text area, obj
         return false
 
-### ctrl Enter to open a new line with indentation
+# ctrl Enter to open a new line with indentation
 window.key_ctrl_enter = (area) ->
   now = tool.wrap_text area
   if now.same
+    row = now.a_row
+    lines = now.lines
+    new_line = (lines[row].match /^\s*/)[0]
+    lines = lines[0..row].concat([new_line]).concat lines[row+1..]
+    obj =
+      lines: lines
+      a_row: row + 1
+    tool.write_text area, obj
+
+# ctrl shift Enter nearly the same, but put at above
+window.key_ctrl_shift_enter = (area) ->
+  now = tool.wrap_text area
+  if now.same
+    row = now.a_row
+    lines = now.lines
+    new_line = (lines[row].match /^\s*/)[0]
+    lines = lines[0...row].concat([new_line]).concat lines[row..]
+    obj =
+      lines: lines
+      a_row: row
+    tool.write_text area, obj
+
+# move current line up
+window.key_ctrl_shift_up = (area) ->
+  now = tool.wrap_text area
+  if now.same
+    row = now.a_row
+    if row > 0
+      lines = now.lines
+      [lines[row], lines[row-1]] = [lines[row-1], lines[row]]
+      obj =
+        lines: lines
+        a_row: row-1
+        a_col: now.a_col
+      tool.write_text area, obj
+  else
+    sta_row = now.a_row
+    end_row = now.b_row
+    if sta_row > 0
+      lines = now.lines
+      t_line = lines[sta_row-1]
+      for line, index in lines[sta_row..end_row]
+        lines[sta_row+index-1] = line
+      lines[end_row] = t_line
+      obj =
+        lines: lines
+        a_row: sta_row - 1
+        a_col: now.a_col
+        b_row: end_row - 1
+        b_col: now.b_col
+      tool.write_text area, obj
+  false
+
+# move current line udown
+window.key_ctrl_shift_down = (area) ->
+  now = tool.wrap_text area
+  lines = now.lines
+  if now.same
+    row = now.a_row
+    if row < lines.length - 1
+      [lines[row], lines[row+1]] = [lines[row+1], lines[row]]
+      obj =
+        lines: lines
+        a_row: row+1
+        a_col: now.a_col
+      tool.write_text area, obj
+  else
+    sta_row = now.a_row
+    end_row = now.b_row
+    if end_row < lines.length - 1
+      t_line = lines[end_row+1]
+      for line, index in lines[sta_row..end_row]
+        lines[sta_row+index+1] = line
+      lines[sta_row] = t_line
+      obj =
+        lines: lines
+        a_row: sta_row + 1
+        a_col: now.a_col
+        b_row: end_row + 1
+        b_col: now.b_col
+      tool.write_text area, obj
+  false
+
+# go to the begining of whole page
+window.key_ctrl_home = (area) ->
+  now = tool.wrap_text area
+  if now.same
+    obj =
+      lines: now.lines
+      a_row: 0
+      a_col: 0
+    tool.write_text area, obj
+
+# go to the end of whole page
+window.key_ctrl_end = (area) ->
+  now = tool.wrap_text area
+  if now.same
+    lines = now.lines
+    obj =
+      lines: lines
+      a_row: lines.length - 1
+    tool.write_text area, obj

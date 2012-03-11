@@ -38,7 +38,7 @@ write_text = (area, obj) ->
   else
     if obj.b_row? then b_col = arr[b_row].length
     else b_col = a_col
-  o '4: ', a_row, a_col, b_row, b_col, obj.b_col
+  # o '4: ', a_row, a_col, b_row, b_col, obj.b_col
   area.value = arr.join '\n'
   area.selectionStart = set_position arr, a_row, a_col
   area.selectionEnd = set_position arr, b_row, b_col
