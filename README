@@ -1,5 +1,5 @@
 
-Live demo [here](http://docview.cnodejs.net/leaf/projects/textareaEditor/editor.html?html),  
+Live demo [here](http://docview.cnodejs.net/projects/textareaEditor/editor.html?html),  
 but only works for Firefox, as I didn't get clear about `event.charCode`.  
 Someone may folk it, (or I'll trying to fix it when I get familiar with details about this).  
 
@@ -38,3 +38,12 @@ Now we got:
 Going to do:  
 1. auto close brackets  
 2. auto remove brackets by pair  
+
+
+英文写得我都无语了, 当成正则这类勉强能看懂的, 吧?  
+我将代码分离成 3 个文件了, 算是目前我最像话的代码了, 之前高兴还乐了会  
+但是后面想加上补全之类的就发现这个模型有点幼稚了.. 再说吧, 上不上还是问题  
+如果要进行扩展, 要先用`wrap_text`获取`textarea`的内容, 返回一个处理过的对象  
+然后`tool`对象有些函数能处理文本的, 用处不大, 这里主要是修改`lines`  
+然后生成一个`obj`, 省略的位置参数接口上做了设计, 比如`b`默认取`a`的, `col`空白表示末尾的  
+传给`write_text`之后, 代为写入, 我目前所做的就是这些了  
