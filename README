@@ -9,14 +9,32 @@ indentation, auto indent, delete line, move line, etc. ,
 There are three configure files:
 `map_key.coffee`: list the available shortcuts, most of them haven't been deployed yet  
 `editor.coffee`: basic functions to handle lines of content,  
-`key_handler.coffee`: the behavior of shortcuts   
+`key_handler.coffee`: the behavior of shortcuts  
 
 The schedule is like this:  
 1. apply `event_handler` to the `id` of a `<textarea>` element,  
 2. when event was caught, `map_keys` will choose the spection function to response,  
 3. use `tool.wrap_text` to abstract(?...) the text, return as an object,  
 4. analyze the object(as `now`), create a new object names `obj` of the result,  
-5. use `tool.write_text` to draw texts in the `<textarea>`
+5. use `tool.write_text` to draw texts in the `<textarea>`  
 
-The biggest problem is `event.charCode`, are different in Firefox and Chrome..  
-So I should learn basic JS knowledge first, that's.. I'll try..
+When adding new shortcuts:  
+1. lookup the `map_key.coffee` to fill in details  
+2. define the behavior at `key_handler.coffee` with `wrap_text` and `write_text`  
+
+Now we got:  
+. ESC  -- blur from textarea  
+. Tab  -- indentation using 2(or 1) tabs  
+. Shift Tab  -- remove indentation one step  
+. Ctrl l  -- select line  
+. Ctrl Enter  -- new line with indentation  
+. Ctrl u  -- remove the words inline before the curse  
+. Ctrl k  -- remove words after the curse in the same line  
+. Ctrl Shift Up  -- move lines up  
+. Ctrl Shift Down  -- move lines down  
+. Ctrl Shift k  -- remove current line  
+. Ctrl Shift d  -- duplicate current line  
+
+Going to do:  
+1. auto close brackets  
+2. auto remove brackets by pair  
