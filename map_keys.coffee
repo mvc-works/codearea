@@ -18,6 +18,7 @@ press =
   n9: 57
   squBrac: 219
   quote: 222
+  backquote: 192
 
 window.map_keys = (arr, area, key_equal) ->
   if key_equal arr, [off, off, off, press.tab      ] then return key_tab              area
@@ -26,6 +27,7 @@ window.map_keys = (arr, area, key_equal) ->
   if key_equal arr, [off, off, off, press.backspace] then return key_backspace        area
   if key_equal arr, [off, off, off, press.squBrac  ] then return key_bracket          area, '[]'
   if key_equal arr, [off, off, off, press.quote    ] then return key_bracket          area, "''"
+  if key_equal arr, [off, off, off, press.backquote] then return key_bracket          area, '``'
   # with alt key active
   if key_equal arr, [off, on,  off, press.enter    ] then return key_alt_enter        area
   # with shift key active

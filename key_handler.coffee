@@ -216,10 +216,10 @@ window.key_enter = (area) ->
 # press backspace at head, last line if empty, delete it
 window.key_backspace = (area) ->
   now = tool.wrap_text area
-  if now.same and now.a_sta
+  if now.same
     row = now.a_row
     lines = now.lines
-    if lines[row-1]?
+    if lines[row-1]? and now.a_sta
       if lines[row-1].match /^\s+$/
         lines = lines[...row-1].concat lines[row..]
         obj =
@@ -228,6 +228,17 @@ window.key_backspace = (area) ->
           a_col: 0
         tool.write_text area, obj
         return false
+    # o now.a_end
+    if lines[row].length>1 and (not now.a_end)
+      pair = lines[row][now.a_col-1..now.a_col]
+      # o pair
+      if pair in ['{}', '()', '[]', '""', "''", '``']
+        lines[row] = lines[row][...now.a_col] + lines[row][now.a_col+1..]
+        obj =
+          lines: lines
+          a_row: now.a_row
+          a_col: now.b_col
+        tool.write_text area, obj
 
 # ctrl Enter to open a new line with indentation
 window.key_ctrl_enter = (area) ->
@@ -344,8 +355,10 @@ window.key_bracket = (area, bracket) ->
   a_col = now.a_col
   b_row = now.b_row
   b_col = now.b_col
+  # o bracket
   lines[b_row] = lines[b_row][...b_col] + bracket[1] + lines[b_row][b_col..]
   lines[a_row] = lines[a_row][...a_col] + bracket[0] + lines[a_row][a_col..]
+  # o lines[0]
   obj =
     lines: lines
     a_row: a_row
