@@ -335,3 +335,22 @@ window.key_ctrl_end = (area) ->
       lines: lines
       a_row: lines.length - 1
     tool.write_text area, obj
+
+# left-bracket
+window.key_bracket = (area, bracket) ->
+  now = tool.wrap_text area
+  lines = now.lines
+  a_row = now.a_row
+  a_col = now.a_col
+  b_row = now.b_row
+  b_col = now.b_col
+  lines[b_row] = lines[b_row][...b_col] + bracket[1] + lines[b_row][b_col..]
+  lines[a_row] = lines[a_row][...a_col] + bracket[0] + lines[a_row][a_col..]
+  obj =
+    lines: lines
+    a_row: a_row
+    a_col: a_col + 1
+    b_row: b_row
+    b_col: b_col + 1
+  tool.write_text area, obj
+  return false
