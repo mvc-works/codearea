@@ -51,21 +51,45 @@
         padding: 6px;
         line-height: 21px;
         font-size: 14px;
-        font-family: "wenquanyi micro hei";
+        font-family: "wenquanyi micro hei mono";
         resize: none;
         box-shadow: 3px 4px 20px black;
         -webkit-box-shadow: 3px 4px 20px black;
+        -moz-box-shadow: 3px 4px 20px black;
         box-sizing: border-box;
+        box-sizing: -moz-border-box;
       }
       p{
         margin: 0px;
         padding: 0px;
         line-height: 21px;
       }
+      a{
+        color: #ddf;
+      }
+      p>code{
+        background: #559;
+      }
+      pre{
+        background: #559;
+      }
   	</style>
   </head>
   <body>
-    <textarea id="area"></textarea>
+    <textarea id="area">中午一个小时加上括号这些, 不想再英文写一遍介绍了
+然后现在编辑器的基本功能啦, 反正到这个样子后边也都是我不会做的功能了
+一些比较基本的快捷键, 还有基础的括号自动补全, 这些应该都可以了
+我在`Chrome`上测试的, 火狐被我抛弃了.. 别的浏览器就别想了
+我加上了一个`Markdown`的`Demo`, 如果对的话, 鼠标移入移出应该已经有动作了
+自认为这是我写代码当中最像话的一次, 结构上算清晰, 别的.. 算了
+`Markdown`嘛, _代码_什么的应该可以.. 这个是[gfm](http://github.github.com/github-flavored-markdown/)
+呃.. ,,好吧, 我承认设计有误, 因为链接神马你根本点不到的,,
+> `gfm`这个语法... 无语
+
+    code 什么不错的, 缩进设定死的两格, 习惯比较差
+      当然这东西我也只能打算拿来玩而已
+
+就这些吧, `Live Demo`...</textarea>
     <div id="draw"></div>
   </body>
 </html>
