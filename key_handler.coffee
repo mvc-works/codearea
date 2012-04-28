@@ -40,7 +40,7 @@ window.key_tab = (area) ->
     obj =
       lines: lines
       a_row: sta_line
-      a_col: now.a_col+2
+      a_col: now.a_col
       b_row: end_line
       b_col: now.b_col+2
     tool.write_text area, obj
@@ -367,3 +367,18 @@ window.key_bracket = (area, bracket) ->
     b_col: b_col + 1
   tool.write_text area, obj
   return false
+
+window.key_bracket_close = (area, closer) ->
+  now = tool.wrap_text area
+  if now.same
+    row = now.a_row
+    col = now.a_col
+    lines = now.lines
+    target = lines[row][col]
+    if target? and target is closer
+      obj =
+        lines: lines
+        a_row: row
+        a_col: col + 1
+      tool.write_text area, obj
+      return false
