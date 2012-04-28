@@ -453,7 +453,8 @@ textareaEditor = (target_id) ->
           b_col: now.b_col
         tool.write_text area, obj
     false
-
+  
+  ###
   # go to the begining of whole page
   key_ctrl_home = (area) ->
     now = tool.wrap_text area
@@ -473,6 +474,7 @@ textareaEditor = (target_id) ->
         lines: lines
         a_row: lines.length - 1
       tool.write_text area, obj
+  ###
 
   # left-bracket
   key_bracket = (area, bracket) ->

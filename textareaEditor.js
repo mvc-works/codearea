@@ -3,7 +3,7 @@ var textareaEditor,
   __slice = [].slice;
 
 textareaEditor = function(target_id) {
-  var at_line_end, at_line_sta, event_handler, g_id, get_column, get_row, indent_n, key_backspace, key_bracket, key_bracket_close, key_ctrl_end, key_ctrl_enter, key_ctrl_home, key_ctrl_k, key_ctrl_l, key_ctrl_shift_d, key_ctrl_shift_down, key_ctrl_shift_enter, key_ctrl_shift_k, key_ctrl_shift_up, key_ctrl_u, key_enter, key_equal, key_esc, key_shift_tab, key_tab, line_empty, map_keys, o, press, set_position, tool, wrap_text, write_text;
+  var at_line_end, at_line_sta, event_handler, g_id, get_column, get_row, indent_n, key_backspace, key_bracket, key_bracket_close, key_ctrl_enter, key_ctrl_k, key_ctrl_l, key_ctrl_shift_d, key_ctrl_shift_down, key_ctrl_shift_enter, key_ctrl_shift_k, key_ctrl_shift_up, key_ctrl_u, key_enter, key_equal, key_esc, key_shift_tab, key_tab, line_empty, map_keys, o, press, set_position, tool, wrap_text, write_text;
   g_id = function(tagid) {
     return document.getElementById(tagid);
   };
@@ -540,30 +540,28 @@ textareaEditor = function(target_id) {
     }
     return false;
   };
-  key_ctrl_home = function(area) {
-    var now, obj;
-    now = tool.wrap_text(area);
-    if (now.same) {
-      obj = {
-        lines: now.lines,
-        a_row: 0,
-        a_col: 0
-      };
-      return tool.write_text(area, obj);
-    }
-  };
-  key_ctrl_end = function(area) {
-    var lines, now, obj;
-    now = tool.wrap_text(area);
-    if (now.same) {
-      lines = now.lines;
-      obj = {
-        lines: lines,
-        a_row: lines.length - 1
-      };
-      return tool.write_text(area, obj);
-    }
-  };
+  /*
+    # go to the begining of whole page
+    key_ctrl_home = (area) ->
+      now = tool.wrap_text area
+      if now.same
+        obj =
+          lines: now.lines
+          a_row: 0
+          a_col: 0
+        tool.write_text area, obj
+  
+    # go to the end of whole page
+    key_ctrl_end = (area) ->
+      now = tool.wrap_text area
+      if now.same
+        lines = now.lines
+        obj =
+          lines: lines
+          a_row: lines.length - 1
+        tool.write_text area, obj
+  */
+
   key_bracket = function(area, bracket) {
     var a_col, a_row, b_col, b_row, lines, now, obj;
     now = tool.wrap_text(area);
