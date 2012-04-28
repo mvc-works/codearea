@@ -1,0 +1,24 @@
+
+html
+  head
+    title TextareaEditor Demo
+    meta(charset='utf-8')
+    :stylus
+      body
+        margin 0px
+      textarea
+        width 100%
+        height 100%
+        background hsl(330,100%,20%)
+        color white
+        padding 10px 4px
+        font-size 14px
+        font-family monospace
+    script(src='../textareaEditor.js')
+    :coffeescript
+      window.onload = ->
+        textareaEditor 'paper'
+  body
+    textarea#paper 
+      | try input something here
+      | sdsg
