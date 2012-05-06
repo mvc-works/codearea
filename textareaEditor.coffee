@@ -563,8 +563,8 @@ textareaEditor = (target_id) ->
     if key_equal arr, [on,  off, off, press.enter    ] then return key_ctrl_enter       area
     if key_equal arr, [on,  off, off, press.k        ] then return key_ctrl_k           area
     if key_equal arr, [on,  off, off, press.u        ] then return key_ctrl_u           area
-    if key_equal arr, [on,  off, off, press.home     ] then return key_ctrl_home        area
-    if key_equal arr, [on,  off, off, press.end      ] then return key_ctrl_end         area
+    # if key_equal arr, [on,  off, off, press.home     ] then return key_ctrl_home        area
+    # if key_equal arr, [on,  off, off, press.end      ] then return key_ctrl_end         area
     # with ctrl shift keys active
     if key_equal arr, [on,  off, on,  press.enter    ] then return key_ctrl_shift_enter area
     if key_equal arr, [on,  off, on,  press.k        ] then return key_ctrl_shift_k     area
