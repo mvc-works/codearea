@@ -1,29 +1,29 @@
 
-textareaEditor = (target_id) ->
+textareaEditor = (textarea_id) ->
   # take id and find the element
-  g_id = (tagid) -> document.getElementById tagid
+  tag = (tagid) -> document.getElementById tagid
+  area = tag textarea_id
 
   # output function o
   o = (v...) -> console.log v
 
   # main idea, to wrap text to lines in object
   wrap_text = (area) ->
-    start = area.selectionStart
+    sta = area.selectionStart
     end = area.selectionEnd
     contx = area.value
     lines = contx.split '\n'
     obj =
       lines: lines
-      a_row: get_row     contx, start
-      a_col: get_column  contx, start
-      a_sta: at_line_sta contx, start
-      a_end: at_line_end contx, start
+      a_row: get_row     contx, sta
+      a_col: get_col     contx, sta
+      a_sta: at_line_sta contx, sta
+      a_end: at_line_end contx, sta
       b_row: get_row     contx, end
-      b_col: get_column  contx, end
+      b_col: get_col     contx, end
       b_sta: at_line_sta contx, end
       b_end: at_line_end contx, end
-      same:  start is end
-      tail:  lines.length - 1
+      same:  sta is end
 
   # have args about text, implement it
   write_text = (area, obj) ->
@@ -58,7 +58,7 @@ textareaEditor = (target_id) ->
     count
 
   # function to get column index
-  get_column = (str, point) ->
+  get_col = (str, point) ->
     str = str[0...point]
     last = str.lastIndexOf '\n'
     last += 1
@@ -79,59 +79,9 @@ textareaEditor = (target_id) ->
     return true unless text[p]?
     false
 
-  # check empty line
-  line_empty = (line) ->
-    if (line.match /^\s*$/)? then true else false
-
-  # get the number of spaces in the indent
-  indent_n = (str) ->
-    count = 0
-    while str[0]?
-      count += 1 if str[0] is ' '
-      str = str[1..]
-    count
-
-  # send tool to key_handlers
-  tool =
-    wrap_text: wrap_text
-    write_text: write_text
-    line_empty: line_empty
-    indent_n: indent_n
-
-  # should use new function to add event handler
-  event_handler = (tagid) ->
-    area = g_id tagid
-    area.onkeydown = (e) ->
-      code = e.keyCode or e.charCode
-      o e.keyCode, e.charCode, '::', code
-      shift = e.shiftKey
-      alt = e.altKey
-      ctrl = e.ctrlKey
-      arr = [ctrl, alt, shift, code]
-      return map_keys arr, area, key_equal
-
-  # switch dont support well, try function
-  key_equal = ([a1, a2, a3, a4], [b1, b2, b3, b4]) ->
-    return false unless a1 is b1
-    return false unless a2 is b2
-    return false unless a3 is b3
-    return false unless a4 is b4
-    true
-
-  # should be placed after function's defining
-  # window.event_handler = event_handler if window?
-  # window.global_sharing_tools = tool
-
-
-  #============================
-
-
-  # o = (v...) -> console.log v
-  # tool = global_sharing_tools
-
   # tab to indent is neccesary
-  key_tab = (area) ->
-    now = tool.wrap_text area
+  key_tab = ->
+    now = wrap_text area
     # o now
     if now.same
       lines = now.lines
@@ -144,7 +94,7 @@ textareaEditor = (target_id) ->
           lines: lines
           a_row: row
           a_col: space_n
-        tool.write_text area, obj
+        write_text area, obj
       else
         spaces = (lines[row].match /^\s*/)[0]
         space_n = spaces.length
@@ -157,7 +107,7 @@ textareaEditor = (target_id) ->
           lines: lines
           a_row: row
           a_col: now.a_col + add_n
-        tool.write_text area, obj
+        write_text area, obj
     else
       sta_line = now.a_row
       end_line = now.b_row
@@ -170,35 +120,35 @@ textareaEditor = (target_id) ->
         a_col: now.a_col
         b_row: end_line
         b_col: now.b_col+2
-      tool.write_text area, obj
+      write_text area, obj
     false
 
   # use shift tab to remove indentation
-  key_shift_tab = (area) ->
-    now = tool.wrap_text area
+  key_shift_tab = ->
+    now = wrap_text area
     lines = now.lines
     if now.same
       row = now.a_row
       spaces = (lines[row].match /^\s*/)[0]
       space_n = spaces.length
       reduce_n = 2 - spaces%2
-      o lines[row], spaces, space_n, reduce_n
+      # o lines[row], spaces, space_n, reduce_n
       if space_n >= reduce_n
         lines[row] = lines[row][reduce_n..]
         obj =
           lines: lines
           a_row: row
           a_col: if now.a_col-reduce_n>0 then now.a_col-reduce_n else 0
-        tool.write_text area, obj
+        write_text area, obj
     else
       sta_row = now.a_row
       end_row = now.b_row
       space_ns = lines[sta_row..end_row].map (line) ->
         spaces = (line.match /^\s*/)[0]
         spaces.length
-      o space_ns
+      # o space_ns
       min_spaces = space_ns.reduce (a, b) -> if a<b then a else b
-      o min_spaces
+      # o min_spaces
       if min_spaces > 0
         reduce_n = 2 - min_spaces%2
         for index in [sta_row..end_row]
@@ -209,12 +159,12 @@ textareaEditor = (target_id) ->
           a_col: now.a_col - reduce_n
           b_row: end_row
           b_col: now.b_col - reduce_n
-        tool.write_text area, obj
+        write_text area, obj
     false
 
   # select current line (to the end of last line)
-  key_ctrl_l = (area) ->
-    now = tool.wrap_text area
+  key_ctrl_l = ->
+    now = wrap_text area
     a_row = now.a_row
     a_col = 0
     if now.lines[a_row-1]?
@@ -225,12 +175,12 @@ textareaEditor = (target_id) ->
       a_row: a_row
       a_col: a_col
       b_row: now.b_row
-    tool.write_text area, obj
+    write_text area, obj
     return false
 
   # delete form curse to the end of the line
-  key_ctrl_k = (area) ->
-    now = tool.wrap_text area
+  key_ctrl_k = ->
+    now = wrap_text area
     if now.same
       lines = now.lines
       row = now.a_row
@@ -240,12 +190,12 @@ textareaEditor = (target_id) ->
         lines: lines
         a_row: row
         a_col: col
-      tool.write_text area, obj
+      write_text area, obj
       return false
 
   # delete form curse to the start of the line, similar to k..
-  key_ctrl_u = (area) ->
-    now = tool.wrap_text area
+  key_ctrl_u = ->
+    now = wrap_text area
     if now.same
       lines = now.lines
       row = now.a_row
@@ -255,16 +205,16 @@ textareaEditor = (target_id) ->
         lines: lines
         a_row: row
         a_col: 0
-      tool.write_text area, obj
+      write_text area, obj
       return false
 
   # unfocus the textarea
-  key_esc = (area) ->
+  key_esc =  ->
     do area.blur
 
   # delete current line
-  key_ctrl_shift_k = (area) ->
-    now = tool.wrap_text area
+  key_ctrl_shift_k = ->
+    now = wrap_text area
     if now.same
       row = now.a_row
       lines = now.lines
@@ -279,7 +229,7 @@ textareaEditor = (target_id) ->
         lines: lines
         a_row: a_row
         a_col: a_col
-      tool.write_text area, obj
+      write_text area, obj
     else
       sta_row = now.a_row
       end_row = now.b_row
@@ -292,12 +242,12 @@ textareaEditor = (target_id) ->
         lines: lines
         a_row: a_row
       o obj
-      tool.write_text area, obj
+      write_text area, obj
     return false
 
   # duplicate current line
-  key_ctrl_shift_d = (area) ->
-    now = tool.wrap_text area
+  key_ctrl_shift_d = ->
+    now = wrap_text area
     lines = now.lines
     if now.same
       row = now.a_row
@@ -306,7 +256,7 @@ textareaEditor = (target_id) ->
         lines: lines
         a_row: row+1
         a_col: now.a_col
-      tool.write_text area, obj
+      write_text area, obj
     else
       sta_row = now.a_row
       end_row = now.b_row
@@ -318,12 +268,12 @@ textareaEditor = (target_id) ->
         a_col: now.a_col
         b_row: end_row + duplicate
         b_col: now.b_col
-      tool.write_text area, obj
+      write_text area, obj
     return false
 
   # enter only, consider last line and
-  key_enter = (area) ->
-    now = tool.wrap_text area
+  key_enter = ->
+    now = wrap_text area
     if now.same
       row = now.a_row
       col = now.a_col
@@ -337,12 +287,12 @@ textareaEditor = (target_id) ->
         lines: lines
         a_row: row+1
         a_col: space_n
-      tool.write_text area, obj
+      write_text area, obj
       return false
 
   # press backspace at head, last line if empty, delete it
-  key_backspace = (area) ->
-    now = tool.wrap_text area
+  key_backspace = ->
+    now = wrap_text area
     if now.same
       row = now.a_row
       lines = now.lines
@@ -353,7 +303,7 @@ textareaEditor = (target_id) ->
             lines: lines
             a_row: row-1
             a_col: 0
-          tool.write_text area, obj
+          write_text area, obj
           return false
       # o now.a_end
       if lines[row].length>1 and (not now.a_end)
@@ -365,11 +315,11 @@ textareaEditor = (target_id) ->
             lines: lines
             a_row: now.a_row
             a_col: now.b_col
-          tool.write_text area, obj
+          write_text area, obj
 
   # ctrl Enter to open a new line with indentation
-  key_ctrl_enter = (area) ->
-    now = tool.wrap_text area
+  key_ctrl_enter = ->
+    now = wrap_text area
     if now.same
       row = now.a_row
       lines = now.lines
@@ -378,11 +328,11 @@ textareaEditor = (target_id) ->
       obj =
         lines: lines
         a_row: row + 1
-      tool.write_text area, obj
+      write_text area, obj
 
   # ctrl shift Enter nearly the same, but put at above
-  key_ctrl_shift_enter = (area) ->
-    now = tool.wrap_text area
+  key_ctrl_shift_enter = ->
+    now = wrap_text area
     if now.same
       row = now.a_row
       lines = now.lines
@@ -391,11 +341,11 @@ textareaEditor = (target_id) ->
       obj =
         lines: lines
         a_row: row
-      tool.write_text area, obj
+      write_text area, obj
 
   # move current line up
-  key_ctrl_shift_up = (area) ->
-    now = tool.wrap_text area
+  key_ctrl_shift_up = ->
+    now = wrap_text area
     if now.same
       row = now.a_row
       if row > 0
@@ -405,7 +355,7 @@ textareaEditor = (target_id) ->
           lines: lines
           a_row: row-1
           a_col: now.a_col
-        tool.write_text area, obj
+        write_text area, obj
     else
       sta_row = now.a_row
       end_row = now.b_row
@@ -421,12 +371,12 @@ textareaEditor = (target_id) ->
           a_col: now.a_col
           b_row: end_row - 1
           b_col: now.b_col
-        tool.write_text area, obj
+        write_text area, obj
     false
 
   # move current line udown
-  key_ctrl_shift_down = (area) ->
-    now = tool.wrap_text area
+  key_ctrl_shift_down = ->
+    now = wrap_text area
     lines = now.lines
     if now.same
       row = now.a_row
@@ -436,7 +386,7 @@ textareaEditor = (target_id) ->
           lines: lines
           a_row: row+1
           a_col: now.a_col
-        tool.write_text area, obj
+        write_text area, obj
     else
       sta_row = now.a_row
       end_row = now.b_row
@@ -451,34 +401,12 @@ textareaEditor = (target_id) ->
           a_col: now.a_col
           b_row: end_row + 1
           b_col: now.b_col
-        tool.write_text area, obj
+        write_text area, obj
     false
-  
-  ###
-  # go to the begining of whole page
-  key_ctrl_home = (area) ->
-    now = tool.wrap_text area
-    if now.same
-      obj =
-        lines: now.lines
-        a_row: 0
-        a_col: 0
-      tool.write_text area, obj
-
-  # go to the end of whole page
-  key_ctrl_end = (area) ->
-    now = tool.wrap_text area
-    if now.same
-      lines = now.lines
-      obj =
-        lines: lines
-        a_row: lines.length - 1
-      tool.write_text area, obj
-  ###
 
   # left-bracket
-  key_bracket = (area, bracket) ->
-    now = tool.wrap_text area
+  key_bracket = (bracket) ->
+    now = wrap_text area
     lines = now.lines
     a_row = now.a_row
     a_col = now.a_col
@@ -494,11 +422,11 @@ textareaEditor = (target_id) ->
       a_col: a_col + 1
       b_row: b_row
       b_col: b_col + 1
-    tool.write_text area, obj
+    write_text area, obj
     return false
 
-  key_bracket_close = (area, closer) ->
-    now = tool.wrap_text area
+  key_bracket_close = (closer) ->
+    now = wrap_text area
     if now.same
       row = now.a_row
       col = now.a_col
@@ -509,68 +437,40 @@ textareaEditor = (target_id) ->
           lines: lines
           a_row: row
           a_col: col + 1
-        tool.write_text area, obj
+        write_text area, obj
         return false
 
+  # new version of map_keys
+  call_shortcut =
+    9:  key_tab
+    13: key_enter
+    8:  key_backspace
+    219: -> key_bracket '[]'
+    192: -> key_bracket '``'
+    222: -> key_bracket "''"
+    221: -> key_bracket_close ']'
+    'shift 9':      key_shift_tab
+    'shift 57':  -> key_bracket '()'
+    'shift 48':  -> key_bracket_close ')'
+    'shift 219': -> key_bracket '{}'
+    'shift 221': -> key_bracket_close '}'
+    'shift 222': -> key_bracket '""'
+    'ctrl 76': key_ctrl_l
+    'ctrl 13': key_ctrl_enter
+    'ctrl 75': key_ctrl_k
+    'ctrl 85': key_ctrl_u
+    'ctrl shift 13': key_ctrl_shift_enter
+    'ctrl shift 75': key_ctrl_shift_k
+    'ctrl shift 68': key_ctrl_shift_d
+    'ctrl shift 38': key_ctrl_shift_up
+    'ctrl shift 40': key_ctrl_shift_down
 
-  # =======================
-
-
-  # about event.keyCode
-  press =
-    enter: 13
-    tab: 9
-    shift: 16
-    alt: 18
-    backspace: 8
-    l: 76
-    k: 75
-    esc: 27
-    d: 68
-    u: 85
-    up: 38
-    down: 40
-    home: 36
-    end: 35
-    n9: 57
-    n0: 48
-    squBrac: 219
-    squBraC: 221
-    quote: 222
-    backquote: 192
-
-  map_keys = (arr, area, key_equal) ->
-    if key_equal arr, [off, off, off, press.tab      ] then return key_tab              area
-    if key_equal arr, [off, off, off, press.enter    ] then return key_enter            area
-    if key_equal arr, [off, off, off, press.esc      ] then return key_esc              area
-    if key_equal arr, [off, off, off, press.backspace] then return key_backspace        area
-    if key_equal arr, [off, off, off, press.squBrac  ] then return key_bracket          area, '[]'
-    if key_equal arr, [off, off, off, press.quote    ] then return key_bracket          area, "''"
-    if key_equal arr, [off, off, off, press.backquote] then return key_bracket          area, '``'
-    if key_equal arr, [off, off, off, press.squBraC  ] then return key_bracket_close    area, ']'
-    # with alt key active
-    if key_equal arr, [off, on,  off, press.enter    ] then return key_alt_enter        area
-    # with shift key active
-    if key_equal arr, [off, off, on,  press.tab      ] then return key_shift_tab        area
-    if key_equal arr, [off, off, on,  press.enter    ] then return key_shift_enter      area
-    if key_equal arr, [off, off, on,  press.n9       ] then return key_bracket          area, '()'
-    if key_equal arr, [off, off, on,  press.n0       ] then return key_bracket_close    area, ')'
-    if key_equal arr, [off, off, on,  press.squBraC  ] then return key_bracket_close    area, '}'
-    if key_equal arr, [off, off, on,  press.squBrac  ] then return key_bracket          area, '{}'
-    if key_equal arr, [off, off, on,  press.quote    ] then return key_bracket          area, '""'
-    # with ctrl key active
-    if key_equal arr, [on,  off, off, press.l        ] then return key_ctrl_l           area
-    if key_equal arr, [on,  off, off, press.enter    ] then return key_ctrl_enter       area
-    if key_equal arr, [on,  off, off, press.k        ] then return key_ctrl_k           area
-    if key_equal arr, [on,  off, off, press.u        ] then return key_ctrl_u           area
-    # if key_equal arr, [on,  off, off, press.home     ] then return key_ctrl_home        area
-    # if key_equal arr, [on,  off, off, press.end      ] then return key_ctrl_end         area
-    # with ctrl shift keys active
-    if key_equal arr, [on,  off, on,  press.enter    ] then return key_ctrl_shift_enter area
-    if key_equal arr, [on,  off, on,  press.k        ] then return key_ctrl_shift_k     area
-    if key_equal arr, [on,  off, on,  press.d        ] then return key_ctrl_shift_d     area
-    if key_equal arr, [on,  off, on,  press.up       ] then return key_ctrl_shift_up    area
-    if key_equal arr, [on,  off, on,  press.down     ] then return key_ctrl_shift_down  area
-
-  # do it!
-  event_handler target_id
+  # new version of event_handler but with object to find the function
+  (tag textarea_id).onkeydown = (e) ->
+    mark = ''
+    mark+= 'alt '   if e.altKey
+    mark+= 'ctrl '  if e.ctrlKey
+    mark+= 'shift ' if e.shiftKey
+    mark+= String e.keyCode
+    o mark
+    call_shortcut[mark] area if call_shortcut[mark]?

@@ -2,34 +2,34 @@
 var textareaEditor,
   __slice = [].slice;
 
-textareaEditor = function(target_id) {
-  var at_line_end, at_line_sta, event_handler, g_id, get_column, get_row, indent_n, key_backspace, key_bracket, key_bracket_close, key_ctrl_enter, key_ctrl_k, key_ctrl_l, key_ctrl_shift_d, key_ctrl_shift_down, key_ctrl_shift_enter, key_ctrl_shift_k, key_ctrl_shift_up, key_ctrl_u, key_enter, key_equal, key_esc, key_shift_tab, key_tab, line_empty, map_keys, o, press, set_position, tool, wrap_text, write_text;
-  g_id = function(tagid) {
+textareaEditor = function(textarea_id) {
+  var area, at_line_end, at_line_sta, call_shortcut, get_col, get_row, key_backspace, key_bracket, key_bracket_close, key_ctrl_enter, key_ctrl_k, key_ctrl_l, key_ctrl_shift_d, key_ctrl_shift_down, key_ctrl_shift_enter, key_ctrl_shift_k, key_ctrl_shift_up, key_ctrl_u, key_enter, key_esc, key_shift_tab, key_tab, o, set_position, tag, wrap_text, write_text;
+  tag = function(tagid) {
     return document.getElementById(tagid);
   };
+  area = tag(textarea_id);
   o = function() {
     var v;
     v = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
     return console.log(v);
   };
   wrap_text = function(area) {
-    var contx, end, lines, obj, start;
-    start = area.selectionStart;
+    var contx, end, lines, obj, sta;
+    sta = area.selectionStart;
     end = area.selectionEnd;
     contx = area.value;
     lines = contx.split('\n');
     return obj = {
       lines: lines,
-      a_row: get_row(contx, start),
-      a_col: get_column(contx, start),
-      a_sta: at_line_sta(contx, start),
-      a_end: at_line_end(contx, start),
+      a_row: get_row(contx, sta),
+      a_col: get_col(contx, sta),
+      a_sta: at_line_sta(contx, sta),
+      a_end: at_line_end(contx, sta),
       b_row: get_row(contx, end),
-      b_col: get_column(contx, end),
+      b_col: get_col(contx, end),
       b_sta: at_line_sta(contx, end),
       b_end: at_line_end(contx, end),
-      same: start === end,
-      tail: lines.length - 1
+      same: sta === end
     };
   };
   write_text = function(area, obj) {
@@ -72,7 +72,7 @@ textareaEditor = function(target_id) {
     }
     return count;
   };
-  get_column = function(str, point) {
+  get_col = function(str, point) {
     var last, n, sub_str;
     str = str.slice(0, point);
     last = str.lastIndexOf('\n');
@@ -102,65 +102,9 @@ textareaEditor = function(target_id) {
     }
     return false;
   };
-  line_empty = function(line) {
-    if ((line.match(/^\s*$/)) != null) {
-      return true;
-    } else {
-      return false;
-    }
-  };
-  indent_n = function(str) {
-    var count;
-    count = 0;
-    while (str[0] != null) {
-      if (str[0] === ' ') {
-        count += 1;
-      }
-      str = str.slice(1);
-    }
-    return count;
-  };
-  tool = {
-    wrap_text: wrap_text,
-    write_text: write_text,
-    line_empty: line_empty,
-    indent_n: indent_n
-  };
-  event_handler = function(tagid) {
-    var area;
-    area = g_id(tagid);
-    return area.onkeydown = function(e) {
-      var alt, arr, code, ctrl, shift;
-      code = e.keyCode || e.charCode;
-      o(e.keyCode, e.charCode, '::', code);
-      shift = e.shiftKey;
-      alt = e.altKey;
-      ctrl = e.ctrlKey;
-      arr = [ctrl, alt, shift, code];
-      return map_keys(arr, area, key_equal);
-    };
-  };
-  key_equal = function(_arg, _arg1) {
-    var a1, a2, a3, a4, b1, b2, b3, b4;
-    a1 = _arg[0], a2 = _arg[1], a3 = _arg[2], a4 = _arg[3];
-    b1 = _arg1[0], b2 = _arg1[1], b3 = _arg1[2], b4 = _arg1[3];
-    if (a1 !== b1) {
-      return false;
-    }
-    if (a2 !== b2) {
-      return false;
-    }
-    if (a3 !== b3) {
-      return false;
-    }
-    if (a4 !== b4) {
-      return false;
-    }
-    return true;
-  };
-  key_tab = function(area) {
+  key_tab = function() {
     var add_n, end_line, index, lines, now, obj, row, space_n, spaces, sta_line, _i;
-    now = tool.wrap_text(area);
+    now = wrap_text(area);
     if (now.same) {
       lines = now.lines;
       row = now.a_row;
@@ -173,7 +117,7 @@ textareaEditor = function(target_id) {
           a_row: row,
           a_col: space_n
         };
-        tool.write_text(area, obj);
+        write_text(area, obj);
       } else {
         spaces = (lines[row].match(/^\s*/))[0];
         space_n = spaces.length;
@@ -188,7 +132,7 @@ textareaEditor = function(target_id) {
           a_row: row,
           a_col: now.a_col + add_n
         };
-        tool.write_text(area, obj);
+        write_text(area, obj);
       }
     } else {
       sta_line = now.a_row;
@@ -204,20 +148,19 @@ textareaEditor = function(target_id) {
         b_row: end_line,
         b_col: now.b_col + 2
       };
-      tool.write_text(area, obj);
+      write_text(area, obj);
     }
     return false;
   };
-  key_shift_tab = function(area) {
+  key_shift_tab = function() {
     var end_row, index, lines, min_spaces, now, obj, reduce_n, row, space_n, space_ns, spaces, sta_row, _i;
-    now = tool.wrap_text(area);
+    now = wrap_text(area);
     lines = now.lines;
     if (now.same) {
       row = now.a_row;
       spaces = (lines[row].match(/^\s*/))[0];
       space_n = spaces.length;
       reduce_n = 2 - spaces % 2;
-      o(lines[row], spaces, space_n, reduce_n);
       if (space_n >= reduce_n) {
         lines[row] = lines[row].slice(reduce_n);
         obj = {
@@ -225,7 +168,7 @@ textareaEditor = function(target_id) {
           a_row: row,
           a_col: now.a_col - reduce_n > 0 ? now.a_col - reduce_n : 0
         };
-        tool.write_text(area, obj);
+        write_text(area, obj);
       }
     } else {
       sta_row = now.a_row;
@@ -234,7 +177,6 @@ textareaEditor = function(target_id) {
         spaces = (line.match(/^\s*/))[0];
         return spaces.length;
       });
-      o(space_ns);
       min_spaces = space_ns.reduce(function(a, b) {
         if (a < b) {
           return a;
@@ -242,7 +184,6 @@ textareaEditor = function(target_id) {
           return b;
         }
       });
-      o(min_spaces);
       if (min_spaces > 0) {
         reduce_n = 2 - min_spaces % 2;
         for (index = _i = sta_row; sta_row <= end_row ? _i <= end_row : _i >= end_row; index = sta_row <= end_row ? ++_i : --_i) {
@@ -255,14 +196,14 @@ textareaEditor = function(target_id) {
           b_row: end_row,
           b_col: now.b_col - reduce_n
         };
-        tool.write_text(area, obj);
+        write_text(area, obj);
       }
     }
     return false;
   };
-  key_ctrl_l = function(area) {
+  key_ctrl_l = function() {
     var a_col, a_row, now, obj;
-    now = tool.wrap_text(area);
+    now = wrap_text(area);
     a_row = now.a_row;
     a_col = 0;
     if (now.lines[a_row - 1] != null) {
@@ -275,12 +216,12 @@ textareaEditor = function(target_id) {
       a_col: a_col,
       b_row: now.b_row
     };
-    tool.write_text(area, obj);
+    write_text(area, obj);
     return false;
   };
-  key_ctrl_k = function(area) {
+  key_ctrl_k = function() {
     var col, lines, now, obj, row;
-    now = tool.wrap_text(area);
+    now = wrap_text(area);
     if (now.same) {
       lines = now.lines;
       row = now.a_row;
@@ -291,13 +232,13 @@ textareaEditor = function(target_id) {
         a_row: row,
         a_col: col
       };
-      tool.write_text(area, obj);
+      write_text(area, obj);
       return false;
     }
   };
-  key_ctrl_u = function(area) {
+  key_ctrl_u = function() {
     var col, lines, now, obj, row;
-    now = tool.wrap_text(area);
+    now = wrap_text(area);
     if (now.same) {
       lines = now.lines;
       row = now.a_row;
@@ -308,16 +249,16 @@ textareaEditor = function(target_id) {
         a_row: row,
         a_col: 0
       };
-      tool.write_text(area, obj);
+      write_text(area, obj);
       return false;
     }
   };
-  key_esc = function(area) {
+  key_esc = function() {
     return area.blur();
   };
-  key_ctrl_shift_k = function(area) {
+  key_ctrl_shift_k = function() {
     var a_col, a_row, end_row, lines, now, obj, row, sta_row;
-    now = tool.wrap_text(area);
+    now = wrap_text(area);
     if (now.same) {
       row = now.a_row;
       lines = now.lines;
@@ -333,7 +274,7 @@ textareaEditor = function(target_id) {
         a_row: a_row,
         a_col: a_col
       };
-      tool.write_text(area, obj);
+      write_text(area, obj);
     } else {
       sta_row = now.a_row;
       end_row = now.b_row;
@@ -347,13 +288,13 @@ textareaEditor = function(target_id) {
         a_row: a_row
       };
       o(obj);
-      tool.write_text(area, obj);
+      write_text(area, obj);
     }
     return false;
   };
-  key_ctrl_shift_d = function(area) {
+  key_ctrl_shift_d = function() {
     var duplicate, end_row, lines, now, obj, row, sta_row;
-    now = tool.wrap_text(area);
+    now = wrap_text(area);
     lines = now.lines;
     if (now.same) {
       row = now.a_row;
@@ -363,7 +304,7 @@ textareaEditor = function(target_id) {
         a_row: row + 1,
         a_col: now.a_col
       };
-      tool.write_text(area, obj);
+      write_text(area, obj);
     } else {
       sta_row = now.a_row;
       end_row = now.b_row;
@@ -376,13 +317,13 @@ textareaEditor = function(target_id) {
         b_row: end_row + duplicate,
         b_col: now.b_col
       };
-      tool.write_text(area, obj);
+      write_text(area, obj);
     }
     return false;
   };
-  key_enter = function(area) {
+  key_enter = function() {
     var col, lines, now, obj, row, space_n, spaces;
-    now = tool.wrap_text(area);
+    now = wrap_text(area);
     if (now.same) {
       row = now.a_row;
       col = now.a_col;
@@ -397,13 +338,13 @@ textareaEditor = function(target_id) {
         a_row: row + 1,
         a_col: space_n
       };
-      tool.write_text(area, obj);
+      write_text(area, obj);
       return false;
     }
   };
-  key_backspace = function(area) {
+  key_backspace = function() {
     var lines, now, obj, pair, row;
-    now = tool.wrap_text(area);
+    now = wrap_text(area);
     if (now.same) {
       row = now.a_row;
       lines = now.lines;
@@ -415,7 +356,7 @@ textareaEditor = function(target_id) {
             a_row: row - 1,
             a_col: 0
           };
-          tool.write_text(area, obj);
+          write_text(area, obj);
           return false;
         }
       }
@@ -428,14 +369,14 @@ textareaEditor = function(target_id) {
             a_row: now.a_row,
             a_col: now.b_col
           };
-          return tool.write_text(area, obj);
+          return write_text(area, obj);
         }
       }
     }
   };
-  key_ctrl_enter = function(area) {
+  key_ctrl_enter = function() {
     var lines, new_line, now, obj, row;
-    now = tool.wrap_text(area);
+    now = wrap_text(area);
     if (now.same) {
       row = now.a_row;
       lines = now.lines;
@@ -445,12 +386,12 @@ textareaEditor = function(target_id) {
         lines: lines,
         a_row: row + 1
       };
-      return tool.write_text(area, obj);
+      return write_text(area, obj);
     }
   };
-  key_ctrl_shift_enter = function(area) {
+  key_ctrl_shift_enter = function() {
     var lines, new_line, now, obj, row;
-    now = tool.wrap_text(area);
+    now = wrap_text(area);
     if (now.same) {
       row = now.a_row;
       lines = now.lines;
@@ -460,12 +401,12 @@ textareaEditor = function(target_id) {
         lines: lines,
         a_row: row
       };
-      return tool.write_text(area, obj);
+      return write_text(area, obj);
     }
   };
-  key_ctrl_shift_up = function(area) {
+  key_ctrl_shift_up = function() {
     var end_row, index, line, lines, now, obj, row, sta_row, t_line, _i, _len, _ref, _ref1;
-    now = tool.wrap_text(area);
+    now = wrap_text(area);
     if (now.same) {
       row = now.a_row;
       if (row > 0) {
@@ -476,7 +417,7 @@ textareaEditor = function(target_id) {
           a_row: row - 1,
           a_col: now.a_col
         };
-        tool.write_text(area, obj);
+        write_text(area, obj);
       }
     } else {
       sta_row = now.a_row;
@@ -497,14 +438,14 @@ textareaEditor = function(target_id) {
           b_row: end_row - 1,
           b_col: now.b_col
         };
-        tool.write_text(area, obj);
+        write_text(area, obj);
       }
     }
     return false;
   };
-  key_ctrl_shift_down = function(area) {
+  key_ctrl_shift_down = function() {
     var end_row, index, line, lines, now, obj, row, sta_row, t_line, _i, _len, _ref, _ref1;
-    now = tool.wrap_text(area);
+    now = wrap_text(area);
     lines = now.lines;
     if (now.same) {
       row = now.a_row;
@@ -515,7 +456,7 @@ textareaEditor = function(target_id) {
           a_row: row + 1,
           a_col: now.a_col
         };
-        tool.write_text(area, obj);
+        write_text(area, obj);
       }
     } else {
       sta_row = now.a_row;
@@ -535,36 +476,14 @@ textareaEditor = function(target_id) {
           b_row: end_row + 1,
           b_col: now.b_col
         };
-        tool.write_text(area, obj);
+        write_text(area, obj);
       }
     }
     return false;
   };
-  /*
-    # go to the begining of whole page
-    key_ctrl_home = (area) ->
-      now = tool.wrap_text area
-      if now.same
-        obj =
-          lines: now.lines
-          a_row: 0
-          a_col: 0
-        tool.write_text area, obj
-  
-    # go to the end of whole page
-    key_ctrl_end = (area) ->
-      now = tool.wrap_text area
-      if now.same
-        lines = now.lines
-        obj =
-          lines: lines
-          a_row: lines.length - 1
-        tool.write_text area, obj
-  */
-
-  key_bracket = function(area, bracket) {
+  key_bracket = function(bracket) {
     var a_col, a_row, b_col, b_row, lines, now, obj;
-    now = tool.wrap_text(area);
+    now = wrap_text(area);
     lines = now.lines;
     a_row = now.a_row;
     a_col = now.a_col;
@@ -579,12 +498,12 @@ textareaEditor = function(target_id) {
       b_row: b_row,
       b_col: b_col + 1
     };
-    tool.write_text(area, obj);
+    write_text(area, obj);
     return false;
   };
-  key_bracket_close = function(area, closer) {
+  key_bracket_close = function(closer) {
     var col, lines, now, obj, row, target;
-    now = tool.wrap_text(area);
+    now = wrap_text(area);
     if (now.same) {
       row = now.a_row;
       col = now.a_col;
@@ -596,115 +515,69 @@ textareaEditor = function(target_id) {
           a_row: row,
           a_col: col + 1
         };
-        tool.write_text(area, obj);
+        write_text(area, obj);
         return false;
       }
     }
   };
-  press = {
-    enter: 13,
-    tab: 9,
-    shift: 16,
-    alt: 18,
-    backspace: 8,
-    l: 76,
-    k: 75,
-    esc: 27,
-    d: 68,
-    u: 85,
-    up: 38,
-    down: 40,
-    home: 36,
-    end: 35,
-    n9: 57,
-    n0: 48,
-    squBrac: 219,
-    squBraC: 221,
-    quote: 222,
-    backquote: 192
+  call_shortcut = {
+    9: key_tab,
+    13: key_enter,
+    8: key_backspace,
+    219: function() {
+      return key_bracket('[]');
+    },
+    192: function() {
+      return key_bracket('``');
+    },
+    222: function() {
+      return key_bracket("''");
+    },
+    221: function() {
+      return key_bracket_close(']');
+    },
+    'shift 9': key_shift_tab,
+    'shift 57': function() {
+      return key_bracket('()');
+    },
+    'shift 48': function() {
+      return key_bracket_close(')');
+    },
+    'shift 219': function() {
+      return key_bracket('{}');
+    },
+    'shift 221': function() {
+      return key_bracket_close('}');
+    },
+    'shift 222': function() {
+      return key_bracket('""');
+    },
+    'ctrl 76': key_ctrl_l,
+    'ctrl 13': key_ctrl_enter,
+    'ctrl 75': key_ctrl_k,
+    'ctrl 85': key_ctrl_u,
+    'ctrl shift 13': key_ctrl_shift_enter,
+    'ctrl shift 75': key_ctrl_shift_k,
+    'ctrl shift 68': key_ctrl_shift_d,
+    'ctrl shift 38': key_ctrl_shift_up,
+    'ctrl shift 40': key_ctrl_shift_down
   };
-  map_keys = function(arr, area, key_equal) {
-    if (key_equal(arr, [false, false, false, press.tab])) {
-      return key_tab(area);
+  return (tag(textarea_id)).onkeydown = function(e) {
+    var mark;
+    mark = '';
+    if (e.altKey) {
+      mark += 'alt ';
     }
-    if (key_equal(arr, [false, false, false, press.enter])) {
-      return key_enter(area);
+    if (e.ctrlKey) {
+      mark += 'ctrl ';
     }
-    if (key_equal(arr, [false, false, false, press.esc])) {
-      return key_esc(area);
+    if (e.shiftKey) {
+      mark += 'shift ';
     }
-    if (key_equal(arr, [false, false, false, press.backspace])) {
-      return key_backspace(area);
-    }
-    if (key_equal(arr, [false, false, false, press.squBrac])) {
-      return key_bracket(area, '[]');
-    }
-    if (key_equal(arr, [false, false, false, press.quote])) {
-      return key_bracket(area, "''");
-    }
-    if (key_equal(arr, [false, false, false, press.backquote])) {
-      return key_bracket(area, '``');
-    }
-    if (key_equal(arr, [false, false, false, press.squBraC])) {
-      return key_bracket_close(area, ']');
-    }
-    if (key_equal(arr, [false, true, false, press.enter])) {
-      return key_alt_enter(area);
-    }
-    if (key_equal(arr, [false, false, true, press.tab])) {
-      return key_shift_tab(area);
-    }
-    if (key_equal(arr, [false, false, true, press.enter])) {
-      return key_shift_enter(area);
-    }
-    if (key_equal(arr, [false, false, true, press.n9])) {
-      return key_bracket(area, '()');
-    }
-    if (key_equal(arr, [false, false, true, press.n0])) {
-      return key_bracket_close(area, ')');
-    }
-    if (key_equal(arr, [false, false, true, press.squBraC])) {
-      return key_bracket_close(area, '}');
-    }
-    if (key_equal(arr, [false, false, true, press.squBrac])) {
-      return key_bracket(area, '{}');
-    }
-    if (key_equal(arr, [false, false, true, press.quote])) {
-      return key_bracket(area, '""');
-    }
-    if (key_equal(arr, [true, false, false, press.l])) {
-      return key_ctrl_l(area);
-    }
-    if (key_equal(arr, [true, false, false, press.enter])) {
-      return key_ctrl_enter(area);
-    }
-    if (key_equal(arr, [true, false, false, press.k])) {
-      return key_ctrl_k(area);
-    }
-    if (key_equal(arr, [true, false, false, press.u])) {
-      return key_ctrl_u(area);
-    }
-    if (key_equal(arr, [true, false, false, press.home])) {
-      return key_ctrl_home(area);
-    }
-    if (key_equal(arr, [true, false, false, press.end])) {
-      return key_ctrl_end(area);
-    }
-    if (key_equal(arr, [true, false, true, press.enter])) {
-      return key_ctrl_shift_enter(area);
-    }
-    if (key_equal(arr, [true, false, true, press.k])) {
-      return key_ctrl_shift_k(area);
-    }
-    if (key_equal(arr, [true, false, true, press.d])) {
-      return key_ctrl_shift_d(area);
-    }
-    if (key_equal(arr, [true, false, true, press.up])) {
-      return key_ctrl_shift_up(area);
-    }
-    if (key_equal(arr, [true, false, true, press.down])) {
-      return key_ctrl_shift_down(area);
+    mark += String(e.keyCode);
+    o(mark);
+    if (call_shortcut[mark] != null) {
+      return call_shortcut[mark](area);
     }
   };
-  return event_handler(target_id);
 };
