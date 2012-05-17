@@ -27,9 +27,10 @@ body {
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
+  background: #000;
 }
 ::-webkit-scrollbar-thumb {
-  background: #000;
+  background: #fff;
 }
 div>p {
   line-height: 22px;
@@ -47,6 +48,7 @@ p>code {
   color: #fff;
   box-sizing: border-box;
   padding: 0px 6px;
+  overflow: auto;
 }
 blockquote {
   margin: 0px 0px 0px 20px;
