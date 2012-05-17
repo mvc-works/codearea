@@ -31,10 +31,13 @@ body {
 ::-webkit-scrollbar-thumb {
   background: #000;
 }
-p {
+div>p {
   line-height: 22px;
-  margin: 0px;
+  margin: 10px 0px;
   padding: 0px 6px;
+}
+blockquote>p {
+  margin: -10px 0px;
 }
 pre,
 p>code {

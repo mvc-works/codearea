@@ -1,20 +1,28 @@
 
 tag = (id) -> document.getElementById id
 
-nc2md = (file, silent) ->
-  last_line = ''
-  md = []
-  for line in (file.split '\n')
-    if line[0] in ['>', '-', '*', ' ', '+']
-      if last_line[0]? and last_line[0] isnt line[0] then md.push ''
-    if (match = line.match /^(\S.*)\s*$/)
-      md.push if silent then match[1] else match[1]+'  '
-    else if (match = line.match /^(\s\s.*)\s*$/) then md.push "  #{match[1]}"
-    else md.push line
-    last_line = line
-  md.join '\n'
+chars = ['>', '-', '*', ' ', '+']
+ss = '  '
 
-put = (str) -> makeHtml (nc2md str, yes)
+nc2md = (file) ->
+  list = file.split '\n'
+  list = list.map (line) ->
+    line = line.trimRight()
+    if line.lenth <= 2 then line
+    else
+      line = if line[0..1] is ss then ss+line else line+ss
+  copy = []
+  normal = true
+  for line in list
+    plain =
+      if not line[0]? then undefined else
+        if line[0] in chars then false else true
+    copy.push '' unless plain is normal
+    normal = plain
+    copy.push line
+  copy.join '\n'
+
+put = (str) -> marked (nc2md str)
 
 store = undefined
 locked = no
@@ -27,7 +35,8 @@ window.onload = ->
   textareaEditor 'text'
 
   view.innerHTML = put text.value
-  text.oninput = -> view.innerHTML = put text.value unless locked
+  text.onkeyup = ->
+    view.innerHTML = put text.value unless locked
 
   document.onkeydown = (e) -> if e.keyCode is 27
     if locked
