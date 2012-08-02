@@ -11,15 +11,17 @@ html
         height 100%
         background hsl(330,100%,20%)
         color white
-        padding 10px 4px
+        padding 8px
         font-size 14px
         font-family monospace
-    script(src='../textareaEditor.js')
+        line-height 20px
+    script(src='../textarea.js')
     :coffeescript
       window.onload = ->
         textareaEditor 'paper'
   body
-    textarea#paper try input something here
+    textarea#paper
+      | try input something here
       | bind at 'elem.onkeydown', not that powserful...
       | go and read READMD on my github
       | the name is textareaEditor

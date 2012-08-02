@@ -1,4 +1,6 @@
 
+even = (n) -> n % 2 is 0
+
 textareaEditor = (textarea_id) ->
   # take id and find the element
   tag = (tagid) -> document.getElementById tagid
@@ -13,10 +15,15 @@ textareaEditor = (textarea_id) ->
     end = area.selectionEnd
     contx = area.value
     lines = contx.split '\n'
+    a_row = get_row contx, sta
+    a_col = get_col contx, sta
     obj =
+      all: lines
+      row: a_row
+      col: a_col
       lines: lines
-      a_row: get_row     contx, sta
-      a_col: get_col     contx, sta
+      a_row: a_row
+      a_col: a_col
       a_sta: at_line_sta contx, sta
       a_end: at_line_end contx, sta
       b_row: get_row     contx, end
@@ -296,7 +303,17 @@ textareaEditor = (textarea_id) ->
     if now.same
       row = now.a_row
       lines = now.lines
-      if lines[row-1]? and now.a_sta
+      if lines[row][...now.a_col].match /^\s+$/
+        n = lines[row][...now.a_col].length
+        if even n then lines[row] = lines[row][...n-2] + lines[row][n..]
+        else lines[row] = lines[row][...n-1] + lines[row][n..]
+        obj =
+          lines: lines
+          a_row: row
+          a_col: n - 2
+        write_text area, obj
+        return false
+      else if lines[row-1]? and now.a_sta
         if lines[row-1].match /^\s+$/
           lines = lines[...row-1].concat lines[row..]
           obj =
@@ -439,12 +456,27 @@ textareaEditor = (textarea_id) ->
           a_col: col + 1
         write_text area, obj
         return false
+  
+  key_home = ->
+    now = wrap_text area
+    if now.same
+      lines = now.lines
+      row = now.a_row
+      col = now.a_col
+      spaces = lines[row].match /^\s+/
+      obj =
+        lines: lines
+        a_row: row
+        a_col: if spaces[0]? then spaces[0].length else 0
+      write_text area, obj
+      return false
 
   # new version of map_keys
   call_shortcut =
     9:  key_tab
     13: key_enter
     8:  key_backspace
+    36: key_home
     219: -> key_bracket '[]'
     192: -> key_bracket '``'
     222: -> key_bracket "''"

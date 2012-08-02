@@ -1,4 +1,8 @@
-<html><head><title>TextareaEditor Demo</title><meta charset="utf-8"/><style type="text/css">body {
+
+<html>
+  <head>
+    <title>TextareaEditor Demo</title>
+    <meta charset="utf-8"/><style type="text/css">body {
   margin: 0px;
 }
 textarea {
@@ -6,11 +10,13 @@ textarea {
   height: 100%;
   background: #603;
   color: #fff;
-  padding: 10px 4px;
+  padding: 8px;
   font-size: 14px;
   font-family: monospace;
+  line-height: 20px;
 }
-</style><script src="../textareaEditor.js"></script><script type="text/javascript">
+</style>
+    <script src="../textarea.js"></script><script type="text/javascript">
 (function() {
 
   window.onload = function() {
@@ -18,6 +24,15 @@ textarea {
   };
 
 }).call(this);
-</script></head><body><textarea id="paper"> 
-try input something here
-sdsg</textarea></body></html>
+</script>
+  </head>
+  <body>
+    <textarea id="paper">
+      try input something here
+      bind at 'elem.onkeydown', not that powserful...
+      go and read READMD on my github
+      the name is textareaEditor
+      or just go up to the parent directory
+    </textarea>
+  </body>
+</html>
