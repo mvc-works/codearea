@@ -467,7 +467,7 @@ textareaEditor = (textarea_id) ->
       obj =
         lines: lines
         a_row: row
-        a_col: if spaces[0]? then spaces[0].length else 0
+        a_col: if spaces? then spaces[0].length else 0
       write_text area, obj
       return false
 

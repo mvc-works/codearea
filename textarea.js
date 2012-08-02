@@ -543,7 +543,7 @@ textareaEditor = function(textarea_id) {
       obj = {
         lines: lines,
         a_row: row,
-        a_col: spaces[0] != null ? spaces[0].length : 0
+        a_col: spaces != null ? spaces[0].length : 0
       };
       write_text(area, obj);
       return false;
