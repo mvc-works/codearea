@@ -17,7 +17,7 @@ Suppose there's tag `<textarea id='area'>` here, use this in your `.js` file:
 Try:  
 ==  
 
-Live demo here: <http://docview.cnodejs.net/projects/textareaEditor/example/live.html?html>  
+Live demo here: <http://jiyinyiyong.github.com/textarea/example/live.html>  
 
 influenced shortcuts:
 
