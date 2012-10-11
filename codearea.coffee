@@ -317,6 +317,7 @@ define (require, exports) ->
       all[ar] = all[ar][...ac] + bracket[0] + all[ar][ac..]
       # o all[0]
       ac += 1
+      bc += 1
       write_text {all,ar,ac,br,bc}
 
     key_bracket_close = (closer) ->
