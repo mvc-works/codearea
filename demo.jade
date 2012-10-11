@@ -1,0 +1,29 @@
+
+html
+  head
+    title TextareaEditor Demo
+    meta(charset='utf-8')
+    :stylus
+      body
+        margin 0px
+      textarea
+        width 100%
+        height 100%
+        background hsl(330,100%,20%)
+        color white
+        padding 8px
+        font-size 14px
+        font-family monospace
+        line-height 20px
+    script(src='http://seajs.org/dist/sea.js')
+    script
+      seajs.config({
+        alias: {
+          'coffee': 'http://modules.seajs.org/coffee/1.3.3/coffee-script.js',
+        },
+        preload: ['seajs/plugin-coffee']
+        });
+      seajs.use('./test.coffee');
+
+  body
+    textarea#paper

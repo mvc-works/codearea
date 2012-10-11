@@ -1,0 +1,34 @@
+
+<html>
+  <head>
+    <title>TextareaEditor Demo</title>
+    <meta charset="utf-8"/><style type="text/css">body {
+  margin: 0px;
+}
+textarea {
+  width: 100%;
+  height: 100%;
+  background: #603;
+  color: #fff;
+  padding: 8px;
+  font-size: 14px;
+  font-family: monospace;
+  line-height: 20px;
+}
+</style>
+    <script src="http://seajs.org/dist/sea.js"></script>
+    <script>
+      seajs.config({
+        alias: {
+          'coffee': 'http://modules.seajs.org/coffee/1.3.3/coffee-script.js',
+        },
+        preload: ['seajs/plugin-coffee']
+        });
+      seajs.use('./test.coffee');
+      
+    </script>
+  </head>
+  <body>
+    <textarea id="paper"></textarea>
+  </body>
+</html>
