@@ -7,5 +7,6 @@ define (require, exports) ->
   {codearea} = require './codearea.coffee'
 
   codearea paper
+  paper.focus()
 
   return
