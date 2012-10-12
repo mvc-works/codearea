@@ -218,9 +218,11 @@ define (require, exports) ->
       {all,ar,ac} = caret
       if caret.same
         all = all[..ar].concat all[ar..]
+        line = all[ar]
         all[ar] = all[ar][...ac]
         spaces = (all[ar].match /^\s*/)[0]
-        all[ar+1] = spaces + all[ar][ac..]
+        all[ar+1] = spaces + line[ac..]
+        o all
         ac = spaces.length
         ar += 1
         write_text {all,ar,ac}
