@@ -366,7 +366,7 @@ define (require, exports) ->
       36: key_home
       219: -> key_bracket '[]'
       192: -> key_quote '`'
-      222: -> key_quote "'"
+      # 222: -> key_quote "'"
       221: -> key_bracket_close ']'
       'shift 9':      key_shift_tab
       'shift 57':  -> key_bracket '()'
