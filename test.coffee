@@ -4,7 +4,7 @@ define (require, exports) ->
 
   paper = get 'paper'
 
-  {codearea} = require './codearea.coffee'
+  {codearea} = require './codearea'
 
   codearea paper
   paper.focus()

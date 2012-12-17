@@ -6,7 +6,7 @@ define(function(require, exports) {
     return document.getElementById(id);
   };
   paper = get('paper');
-  codearea = require('./codearea.coffee').codearea;
+  codearea = require('./codearea').codearea;
   codearea(paper);
   paper.focus();
 });
