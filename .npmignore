@@ -1,0 +1,9 @@
+
+/dist
+src/
+/.gitattributes
+index.html
+upload.edn
+/webpack.*
+yarn.lock
+template.cirru
