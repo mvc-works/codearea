@@ -1,14 +1,14 @@
 {
   "name": "@mvc-works/codearea",
-  "version": "0.0.1-a1",
+  "version": "0.0.1-a2",
   "description": "Web app scaffold based on Webpack",
   "main": "lib/codearea.js",
   "scripts": {
     "clean": "rm -rfv dist/*",
     "watch": "yarn html && webpack-dev-server --config webpack.dev.cirru",
     "release": "yarn clean && webpack --config webpack.release.cirru && yarn release-html",
-    "html": "cirru-script template.cirru",
-    "release-html": "env=release cirru-script template.cirru",
+    "html": "cirruscript template.cirru",
+    "release-html": "env=release cirruscript template.cirru",
     "up": "yarn release && tiye-up",
     "compile": "coffee -o lib -bc src/",
     "prepare": "yarn compile",
