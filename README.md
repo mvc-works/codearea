@@ -15,10 +15,13 @@ yarn add @mvc-works/codearea
 Put the `textareaEditor.js` file in the `<script>` tag of your page.
 Suppose there's tag `<textarea id='area'>` here, use this in your `.js` file:
 
-```jade
+```coffee
 import { codearea } from "@mvc-works/codearea"
 
-codearea textareaElement
+codearea(textareaElement)
+
+# remove events
+teardownCodearea(textareaElement)
 ```
 
 Try here: http://repo.mvc-works.org/codearea/
