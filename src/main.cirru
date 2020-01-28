@@ -6,7 +6,7 @@ console.log :loaded
 var get $ \ (id)
   document.getElementById id
 var
-  (object~ codearea) $ require :./codearea
+  ({}~ codearea) $ require :./codearea
 
 var main $ \ ()
   var paper $ get :paper
