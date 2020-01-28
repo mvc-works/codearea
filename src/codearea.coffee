@@ -82,7 +82,9 @@ at_line_end = (text, point) ->
   false
 
 # tab to indent is neccesary
-key_tab = (target) ->
+key_tab = (target, event) ->
+  event.preventDefault()
+
   caret = wrap_text target
   # o caret
   {all,ar,ac,br,bc} = caret
@@ -112,7 +114,9 @@ key_tab = (target) ->
     write_text target, {all,ar,ac,br,bc}
 
 # use shift tab to remove indentation
-key_shift_tab = (target) ->
+key_shift_tab = (target, event) ->
+  event.preventDefault()
+
   caret = wrap_text target
   {all,ar,ac,br,bc} = caret
   if caret.same
@@ -209,7 +213,9 @@ key_ctrl_shift_d = (target) ->
     write_text target, {all,ar,ac,br,bc}
 
 # enter only, consider last line and
-key_enter = (target) ->
+key_enter = (target, event) ->
+  event.preventDefault()
+
   caret = wrap_text target
   {all,ar,ac} = caret
   if caret.same
@@ -224,7 +230,8 @@ key_enter = (target) ->
     write_text target, {all,ar,ac}
 
 # press backspace at head, last line if empty, delete it
-key_backspace = (target) ->
+key_backspace = (target, event) ->
+
   caret = wrap_text target
   {all,ar,ac} = caret
   if caret.same
@@ -233,12 +240,14 @@ key_backspace = (target) ->
       if even n then all[ar] = all[ar][...n-2] + all[ar][n..]
       else all[ar] = all[ar][...n-1] + all[ar][n..]
       ac = n - 2
+      event.preventDefault()
       write_text target, {all,ar,ac}
     else if all[ar-1]? and caret.as
       if all[ar-1].match /^\s+$/
         all = all[...ar-1].concat all[ar..]
         ar = ar-1
         ac = 0
+        event.preventDefault()
         write_text target, {all,ar,ac}
     # o caret.ae
     else if all[ar].length>1 and (not caret.ae)
@@ -247,6 +256,7 @@ key_backspace = (target) ->
       if pair in ['{}', '()', '[]', '""', "''", '``']
         all[ar] = all[ar][...ac-1] + all[ar][ac+1..]
         ac -= 1
+        event.preventDefault()
         write_text target, {all,ar,ac}
 
 # ctrl Enter to open a new line with indentation
@@ -307,7 +317,9 @@ key_ctrl_shift_down = (target) ->
       write_text target, {all,ar,ac,br,bc}
 
 # left-bracket
-key_bracket = (target, bracket) ->
+key_bracket = (target, event, bracket) ->
+  event.preventDefault()
+
   caret = wrap_text target
   {all,ac,ar,br,bc} = caret
   # o bracket
@@ -318,7 +330,9 @@ key_bracket = (target, bracket) ->
   bc += 1
   write_text target, {all,ar,ac,br,bc}
 
-key_bracket_close = (target, closer) ->
+key_bracket_close = (target, event, closer) ->
+  event.preventDefault()
+
   caret = wrap_text target
   {all,ar,ac} = caret
   if caret.same
@@ -335,7 +349,9 @@ key_home = (target) ->
     ac = if spaces? then spaces[0].length else 0
     write_text target, {all, ar, ac}
 
-key_quote = (target, sign) ->
+key_quote = (target, event, sign) ->
+  event.preventDefault()
+
   caret = wrap_text target
   if caret.same
     {all, ar, ac} = caret
@@ -356,25 +372,25 @@ key_quote = (target, sign) ->
 
 # new version of map_keys
 call_shortcut =
-  9: (target) -> key_tab target
-  13: (target) -> key_enter target
-  8: (target) -> key_backspace target
+  9: (target, event) -> key_tab target, event
+  13: (target, event) -> key_enter target, event
+  8: (target, event) -> key_backspace target, event
   36: (target) -> key_home target
-  219: (target) -> key_bracket target, '[]'
-  192: (target) -> key_quote target, '`'
-  # 222: (target) -> key_quote target, "'"
-  221: (target) -> key_bracket_close target, ']'
-  'shift 9': (target) -> key_shift_tab target
-  'shift 57': (target) -> key_bracket target, '()'
-  'shift 48': (target) -> key_bracket_close target, ')'
-  'shift 219': (target) -> key_bracket target, '{}'
-  'shift 221': (target) -> key_bracket_close target, '}'
-  'shift 222': (target) -> key_quote target, '"'
+  219: (target, event) -> key_bracket target, event, '[]'
+  192: (target, event) -> key_quote target, event, '`'
+  # 222: (target, event) -> key_quote target, event, "'"
+  221: (target, event) -> key_bracket_close target, event, ']'
+  'shift 9': (target, event) -> key_shift_tab target, event
+  'shift 57': (target, event) -> key_bracket target, event, '()'
+  'shift 48': (target, event) -> key_bracket_close target, event, ')'
+  'shift 219': (target, event) -> key_bracket target, event, '{}'
+  'shift 221': (target, event) -> key_bracket_close target, event, '}'
+  'shift 222': (target, event) -> key_quote target, event, '"'
   'ctrl 76': (target) -> key_ctrl_l target
-  'ctrl 13': (target) -> key_ctrl_enter target
+  'ctrl 13': (target, event) -> key_ctrl_enter target, event
   'ctrl 75': (target) -> key_ctrl_k target
   'ctrl 85': (target) -> key_ctrl_u target
-  'ctrl shift 13': (target) -> key_ctrl_shift_enter target
+  'ctrl shift 13': (target, event) -> key_ctrl_shift_enter target, event
   'ctrl shift 75': (target) -> key_ctrl_shift_k target
   'ctrl shift 68': (target) -> key_ctrl_shift_d target
   'ctrl shift 38': (target) -> key_ctrl_shift_up target
@@ -399,16 +415,16 @@ exports.codearea = (area) ->
     mark+= 'shift ' if e.shiftKey
     mark+= String e.keyCode
     # o mark
-    call_shortcut[mark] area if call_shortcut[mark]?
+    call_shortcut[mark] area, e if call_shortcut[mark]?
 
   area.__codearea__ = handleEvents
 
-  area.onkeydown = handleEvents
+  area.addEventListener 'keydown', handleEvents
 
 exports.teardownCodearea = (area) ->
   if not area.__codearea__?
     console.warn area, 'is not a textarea'
     return
 
-  area.onkeydown = null
+  area.removeEventListner 'keydown', area.__codearea__
   area.__codearea__
