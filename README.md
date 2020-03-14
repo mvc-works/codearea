@@ -53,6 +53,20 @@ ctrl shift up
 ctrl shift down
 ```
 
+### Use in Respo
+
+It can be used in Respo Effects:
+
+```clojure
+(defeffect
+ effect-codearea
+ ()
+ (action el)
+ (when (= action :mount) (let [target (.querySelector el ".codearea")] (codearea target))))
+```
+
+> Notice: a bug that codearea does not emit enough `input` events.
+
 ### Chinese Docs
 
 上面`JS`的目标是给`<textarea>`标签增加基本的编程功能支持,
