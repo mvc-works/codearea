@@ -14,4 +14,7 @@ var main $ \ ()
   codearea paper
   paper.focus
 
+  = paper.oninput $ \ (event)
+    console.log :input $ JSON.stringify event.target.value
+
 = window.onload main

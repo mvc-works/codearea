@@ -11,6 +11,13 @@ get_row = (str, point) ->
   count += 1 for i in str when i is '\n'
   count
 
+triggerInput = (element) ->
+  event = new Event 'input',
+    bubbles: true,
+    cancelable: true
+
+  element.dispatchEvent(event);
+
 # main idea, to wrap text to all in object
 wrap_text = (target) ->
   sta = target.selectionStart
@@ -49,6 +56,9 @@ write_text = (target, obj) ->
   target.value = arr.join '\n'
   target.selectionStart = set_position arr, ar, ac
   target.selectionEnd = set_position arr, br, bc
+
+  triggerInput target
+
   false
 
 # change raw and column index to position
