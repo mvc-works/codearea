@@ -406,7 +406,7 @@ call_shortcut =
   'ctrl shift 38': (target) -> key_ctrl_shift_up target
   'ctrl shift 40': (target) -> key_ctrl_shift_down target
 
-exports.codearea = (area) ->
+export codearea = (area) ->
   if not area?
     throw new Error "expected an element as area, but got undefined"
 
@@ -431,7 +431,7 @@ exports.codearea = (area) ->
 
   area.addEventListener 'keydown', handleEvents
 
-exports.teardownCodearea = (area) ->
+export teardownCodearea = (area) ->
   if not area.__codearea__?
     console.warn area, 'is not a textarea'
     return
