@@ -1,11 +1,10 @@
 {
   "name": "@mvc-works/codearea",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Web app scaffold based on Webpack",
   "main": "lib/codearea.js",
   "scripts": {
-    "watch": "coffee -bcw -o lib src/*",
-    "compile": "coffee -bc -o lib src/*",
+    "compile": "yarn tsc --outDir lib/",
     "release": "yarn compile && vite build --base=./"
   },
   "author": "jiyinyiyong",
@@ -14,10 +13,8 @@
     "workflow"
   ],
   "devDependencies": {
-    "coffeescript": "^2.5.1",
-    "rollup-plugin-coffee-script": "^2.0.0",
-    "vite": "^2.5.8",
-    "vite-plugin-coffee": "^2.2.1"
+    "typescript": "^4.4.3",
+    "vite": "^2.5.8"
   },
   "dependencies": {},
   "repository": {
