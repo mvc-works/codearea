@@ -26,21 +26,33 @@ let triggerInput = function (element: HTMLTextAreaElement) {
     bubbles: true,
     cancelable: true,
   });
-  return element.dispatchEvent(event);
+  element.dispatchEvent(event);
 };
 
 interface TextInfo {
+  /** row */
   row: number;
+  /** column */
   col: number;
+  /** all lines */
   all: string[];
+  /** selection start at row */
   ar: number;
+  /** selection start at column */
   ac: number;
+  /** is select start at line start */
   as: boolean;
+  /** is select start at line end */
   ae: boolean;
+  /** selection end at row */
   br: number;
+  /** selection end at column */
   bc: number;
+  /** is select end at line start */
   bs: boolean;
+  /** is select end at line end */
   be: boolean;
+  /** no selection, just same caret */
   same: boolean;
 }
 
@@ -90,7 +102,8 @@ let write_text = function (
     }
   }
   // o '4: ', ar, ac, br, bc, obj.bc
-  target.value = arr.join("\n");
+  let newText = arr.join("\n");
+  target.value = newText;
   target.selectionStart = set_position(arr, ar, ac);
   target.selectionEnd = set_position(arr, br, bc);
   triggerInput(target);
@@ -328,6 +341,22 @@ let key_enter = function (target: HTMLTextAreaElement, event: Event) {
   }
 };
 
+// enter only, consider last line and
+let key_shift_enter = function (target: HTMLTextAreaElement, event: Event) {
+  event.preventDefault();
+  let caret = wrap_text(target);
+  let { all, ar, ac } = caret;
+  if (caret.same) {
+    all = all.slice(0, +ar + 1 || 9e9).concat(all.slice(ar));
+    let line = all[ar];
+    let spaces = line.match(/^\s*/)[0];
+    all[ar] = spaces;
+    ac = spaces.length;
+    ar = ar;
+    return write_text(target, { all, ac, ar });
+  }
+};
+
 // press backspace at head, last line if empty, delete it
 let key_backspace = function (target: HTMLTextAreaElement, event: Event) {
   var ac, all, ar, caret, n, pair;
@@ -536,6 +565,10 @@ let key_quote = function (
 let call_shortcut = {
   9: function (target: HTMLTextAreaElement, event: Event) {
     return key_tab(target, event);
+  },
+
+  "shift 13": function (target: HTMLTextAreaElement, event: Event) {
+    return key_shift_enter(target, event);
   },
   13: function (target: HTMLTextAreaElement, event: Event) {
     return key_enter(target, event);
